@@ -1,0 +1,19 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getSession } from "@/lib/session";
+import { listOverrides } from "@/lib/wxcc-api";
+
+function getOrgId(session: Awaited<ReturnType<typeof getSession>>) {
+  return session.orgId ?? process.env.WXCC_ORG_ID ?? "";
+}
+
+export async function GET() {
+  const session = await getSession();
+  if (!session.accessToken) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  try {
+    const overrides = await listOverrides(getOrgId(session));
+    return NextResponse.json(overrides);
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}
