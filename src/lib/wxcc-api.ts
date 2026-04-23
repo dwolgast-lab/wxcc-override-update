@@ -89,6 +89,7 @@ export interface GlobalVariable {
   id: string;
   name: string;
   value: string;
+  defaultValue?: string;
   type: "string" | "boolean" | "integer" | "decimal" | "date";
   description?: string;
   agentEditable?: boolean;
@@ -103,7 +104,7 @@ export async function listGlobalVariables(orgId: string): Promise<GlobalVariable
 export async function updateGlobalVariable(orgId: string, id: string, variable: Partial<GlobalVariable> & { value: string }) {
   return wxccFetch(`/organization/${orgId}/cad-variable/${id}`, {
     method: "PUT",
-    body: JSON.stringify({ ...variable, id }),
+    body: JSON.stringify({ ...variable, id, defaultValue: variable.value }),
   });
 }
 

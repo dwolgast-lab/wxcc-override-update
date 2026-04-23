@@ -24,7 +24,8 @@ function looksLikeAudioRef(v: GlobalVariable) {
 }
 
 export function VariableEditor({ variable }: Props) {
-  const [value, setValue] = useState(variable.value);
+  const initial = variable.defaultValue ?? variable.value ?? "";
+  const [value, setValue] = useState(initial);
   const [saving, setSaving] = useState(false);
   const isAudio = looksLikeAudioRef(variable);
 
@@ -81,7 +82,7 @@ export function VariableEditor({ variable }: Props) {
         <Button
           size="sm"
           onClick={save}
-          disabled={saving || value === variable.value}
+          disabled={saving || value === initial}
           className="gap-1.5"
         >
           <Save className="w-3.5 h-3.5" />

@@ -14,6 +14,7 @@ export interface GlobalVariable {
   id: string;
   name: string;
   value: string;
+  defaultValue?: string;
   type: string;
   description?: string;
 }
