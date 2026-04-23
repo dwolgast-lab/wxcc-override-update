@@ -188,12 +188,7 @@ export function AudioRecorder({ defaultFilename, onUploaded }: AudioRecorderProp
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-gray-600">
-        Record a message directly in the browser. It will be converted to the WxCC-required
-        format (8-bit, 8 kHz, mono, µ-law WAV) before uploading.
-      </p>
-
-      <div className="rounded-lg border bg-white p-4 space-y-4">
+      <div className="space-y-4">
         <div className="flex items-center gap-4">
           {state === "idle" && (
             <Button onClick={startRecording} className="gap-2 bg-red-600 hover:bg-red-700">
@@ -248,7 +243,7 @@ export function AudioRecorder({ defaultFilename, onUploaded }: AudioRecorderProp
                   className="font-mono"
                 />
                 <Button onClick={upload} disabled={!filename.trim()} className="gap-2 shrink-0">
-                  <Upload className="w-4 h-4" /> Upload
+                  <Upload className="w-4 h-4" /> Accept
                 </Button>
               </div>
             </div>

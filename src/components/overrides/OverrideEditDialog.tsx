@@ -267,13 +267,17 @@ export function OverrideEditDialog({ set, entryIndex, allSets, variables, onClos
         {step === "wav" && (
           <div className="space-y-4">
             <p className="text-sm text-gray-600">
-              Record a message below. After uploading, the filename will be automatically saved to{" "}
-              <span className="font-mono text-xs">{matchedVar?.name ?? "the linked variable"}</span>.
+              Record a message. When you're happy with it, edit the filename if needed then click{" "}
+              <strong>Accept</strong> to upload. The filename will be saved to{" "}
+              <span className="font-mono text-xs">{matchedVar?.name ?? "the linked variable"}</span>{" "}
+              automatically.
             </p>
-            <AudioRecorder
-              defaultFilename={defaultWavFilename}
-              onUploaded={handleWavUploaded}
-            />
+            <div className="rounded-lg border p-4">
+              <AudioRecorder
+                defaultFilename={defaultWavFilename}
+                onUploaded={handleWavUploaded}
+              />
+            </div>
             <Separator />
             <div className="flex justify-between">
               <Button variant="ghost" onClick={() => setStep("edit")} className="gap-1.5">
