@@ -36,7 +36,8 @@ export function VariableEditor({ variable }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ value }),
       });
-      if (!res.ok) throw new Error("Update failed");
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body.error ?? "Update failed");
       toast.success(`"${variable.name}" updated`);
     } catch (err: any) {
       toast.error(err.message);
