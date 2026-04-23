@@ -125,7 +125,7 @@ export async function listAudioFiles(orgId: string): Promise<AudioFile[]> {
 export async function uploadAudioFile(orgId: string, filename: string, wavBuffer: Buffer): Promise<AudioFile> {
   const token = await getValidToken();
   const name = filename.replace(/\.wav$/i, "");
-  const infoJson = JSON.stringify({ name, contentType: "AUDIO_WAV", systemDefault: false });
+  const infoJson = JSON.stringify({ name: filename, contentType: "AUDIO_WAV", systemDefault: false });
   const boundary = `----WxCCBoundary${Date.now()}`;
   const enc = new TextEncoder();
 
