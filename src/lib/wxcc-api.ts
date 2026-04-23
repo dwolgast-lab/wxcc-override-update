@@ -100,10 +100,10 @@ export async function listGlobalVariables(orgId: string): Promise<GlobalVariable
   return data?.data ?? data ?? [];
 }
 
-export async function updateGlobalVariable(orgId: string, id: string, value: string) {
-  return wxccFetch(`/organization/${orgId}/cad-variable/${id}`, {
+export async function updateGlobalVariable(orgId: string, id: string, variable: Partial<GlobalVariable> & { value: string }) {
+  return wxccFetch(`/organization/${orgId}/v2/cad-variable/${id}`, {
     method: "PUT",
-    body: JSON.stringify({ value }),
+    body: JSON.stringify({ ...variable, id }),
   });
 }
 

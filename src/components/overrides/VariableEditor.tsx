@@ -34,7 +34,7 @@ export function VariableEditor({ variable }: Props) {
       const res = await fetch(`/api/wxcc/variables/${variable.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ value }),
+        body: JSON.stringify({ ...variable, value }),
       });
       const body = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(body.error ?? "Update failed");
