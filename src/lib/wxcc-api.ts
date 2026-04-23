@@ -126,18 +126,15 @@ export async function uploadAudioFile(orgId: string, filename: string, wavBuffer
   const token = await getValidToken();
   const name = filename.replace(/\.wav$/i, "");
 
-  // Try raw binary upload — WxCC may not use multipart for audio
-  const res = await fetch(
-    `${WXCC_BASE}/organization/${orgId}/audio-file?name=${encodeURIComponent(name)}`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/octet-stream",
-      },
-      body: new Uint8Array(wavBuffer),
-    }
-  );
+  const form = new FormData();
+  form.set("mediaFile", new File([new Uint8Array(wavBuffer)], filename, { type: "audio/wav" }));
+  form.set("name", name);
+
+  const res = await fetch(`${WXCC_BASE}/organization/${orgId}/v2/audio-file`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: form,
+  });
 
   if (!res.ok) throw new Error(`Audio upload failed (${res.status}): ${await res.text()}`);
   return res.json();
