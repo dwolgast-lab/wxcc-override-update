@@ -125,15 +125,35 @@ export async function listAudioFiles(orgId: string): Promise<AudioFile[]> {
 export async function uploadAudioFile(orgId: string, filename: string, wavBuffer: Buffer): Promise<AudioFile> {
   const token = await getValidToken();
   const name = filename.replace(/\.wav$/i, "");
+  const infoJson = JSON.stringify({ name, contentType: "AUDIO_WAV", systemDefault: false });
+  const boundary = `----WxCCBoundary${Date.now()}`;
+  const enc = new TextEncoder();
 
-  const form = new FormData();
-  form.set("audioFileInfo", JSON.stringify({ name, contentType: "AUDIO_X_WAV", systemDefault: false }));
-  form.set("audioFile", new Blob([new Uint8Array(wavBuffer)], { type: "audio/x-wav" }), filename);
+  // Build multipart manually so audioFileInfo gets Content-Type: application/json
+  // (Node.js FormData sends strings as text/plain which Java/Spring rejects)
+  const header = enc.encode(
+    `--${boundary}\r\n` +
+    `Content-Disposition: form-data; name="audioFileInfo"\r\n` +
+    `Content-Type: application/json\r\n\r\n` +
+    infoJson + `\r\n` +
+    `--${boundary}\r\n` +
+    `Content-Disposition: form-data; name="audioFile"; filename="${filename}"\r\n` +
+    `Content-Type: audio/wav\r\n\r\n`
+  );
+  const footer = enc.encode(`\r\n--${boundary}--\r\n`);
+  const wav = new Uint8Array(wavBuffer);
+  const body = new Uint8Array(header.length + wav.length + footer.length);
+  body.set(header, 0);
+  body.set(wav, header.length);
+  body.set(footer, header.length + wav.length);
 
   const res = await fetch(`${WXCC_BASE}/organization/${orgId}/audio-file`, {
     method: "POST",
-    headers: { Authorization: `Bearer ${token}` },
-    body: form,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": `multipart/form-data; boundary=${boundary}`,
+    },
+    body,
   });
 
   if (!res.ok) throw new Error(`Audio upload failed (${res.status}): ${await res.text()}`);
