@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { ChevronDown, Mic, Type } from "lucide-react";
 import type { OverrideSet, OverrideEntry } from "@/lib/wxcc-api";
 import type { GlobalVariable } from "./OverridesDashboard";
-import { tzAbbr, fmtDate, fmtTime, fmtRecurrence, isRecurring, endDateLabel, findOverrideVariable } from "@/lib/override-format";
+import { tzAbbr, fmtDate, fmtTime, fmtRecurrence, isRecurring, endDateLabel, findOverrideVariable, overrideNameKey } from "@/lib/override-format";
 
 type Step = "edit" | "message-prompt" | "wav" | "tts";
 
@@ -139,7 +139,12 @@ export function OverrideEditDialog({ set, entryIndex, allSets, variables, onClos
   };
 
   const handleWavUploaded = async (uploadedFilename: string) => {
-    if (!matchedVar) { onClose(); return; }
+    if (!matchedVar) {
+      const expected = `global${overrideNameKey(entry.name)}WAV`;
+      toast.warning(`Recording uploaded, but no variable found. Create a global variable named "${expected}" to link the filename automatically.`);
+      onClose();
+      return;
+    }
     try {
       const res = await fetch(`/api/wxcc/variables/${matchedVar.id}`, {
         method: "PUT",

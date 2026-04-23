@@ -2,7 +2,7 @@ import type { OverrideEntry } from "./wxcc-api";
 
 export type MessageType = "TTS" | "WAV" | "FIXED" | null;
 
-function overrideNameKey(name: string): string {
+export function overrideNameKey(name: string): string {
   return name
     .split(/\s+/)
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
