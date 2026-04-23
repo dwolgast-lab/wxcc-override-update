@@ -129,13 +129,13 @@ export async function uploadAudioFile(orgId: string, filename: string, wavBuffer
   form.set("file", new File([new Uint8Array(wavBuffer)], filename, { type: "audio/wav" }));
   form.set("name", filename.replace(/\.wav$/i, ""));
 
-  const res = await fetch(`${WXCC_BASE}/organization/${orgId}/v2/audio-file`, {
+  const res = await fetch(`${WXCC_BASE}/organization/${orgId}/audio-file`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
     body: form,
   });
 
-  if (!res.ok) throw new Error(`Audio upload failed: ${await res.text()}`);
+  if (!res.ok) throw new Error(`Audio upload failed (${res.status}): ${await res.text()}`);
   return res.json();
 }
 

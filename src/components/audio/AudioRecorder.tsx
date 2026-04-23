@@ -171,7 +171,10 @@ export function AudioRecorder({ defaultFilename, onUploaded }: AudioRecorderProp
     form.append("filename", name);
     try {
       const res = await fetch("/api/wxcc/audio", { method: "POST", body: form });
-      if (!res.ok) throw new Error(await res.text());
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error ?? `Upload failed (${res.status})`);
+      }
       toast.success(`"${name}" uploaded to WxCC audio repository`);
       onUploaded?.(name);
       discard();
