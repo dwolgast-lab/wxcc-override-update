@@ -135,7 +135,7 @@ export async function uploadAudioFile(orgId: string, filename: string, wavBuffer
         Authorization: `Bearer ${token}`,
         "Content-Type": "audio/wav",
       },
-      body: wavBuffer,
+      body: new Uint8Array(wavBuffer),
     }
   );
 
