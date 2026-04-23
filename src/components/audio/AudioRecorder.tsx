@@ -12,9 +12,10 @@ type RecordingState = "idle" | "recording" | "recorded" | "converting" | "upload
 
 interface AudioRecorderProps {
   defaultFilename?: string;
+  onUploaded?: (filename: string) => void;
 }
 
-export function AudioRecorder({ defaultFilename }: AudioRecorderProps) {
+export function AudioRecorder({ defaultFilename, onUploaded }: AudioRecorderProps) {
   const [state, setState] = useState<RecordingState>("idle");
   const [duration, setDuration] = useState(0);
   const [filename, setFilename] = useState(defaultFilename ?? "override-message.wav");
@@ -127,6 +128,7 @@ export function AudioRecorder({ defaultFilename }: AudioRecorderProps) {
       const res = await fetch("/api/wxcc/audio", { method: "POST", body: form });
       if (!res.ok) throw new Error(await res.text());
       toast.success(`"${name}" uploaded to WxCC audio repository`);
+      onUploaded?.(name);
       discard();
     } catch (err: any) {
       toast.error(`Upload failed: ${err.message}`);

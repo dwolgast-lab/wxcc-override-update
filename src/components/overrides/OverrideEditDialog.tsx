@@ -69,8 +69,13 @@ export function OverrideEditDialog({ set, entryIndex, allSets, variables, onClos
   const msgMatch = findOverrideVariable(entry.name, variables);
   const messageType = msgMatch?.type ?? null;
   const matchedVar  = msgMatch?.variable ?? null;
-  const wavFilename = entry.description?.trim() || matchedVar?.value?.trim() || null;
   const messageStep: Step = messageType === "WAV" ? "wav" : "tts";
+
+  const now = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const dateStr = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+  const safeName = entry.name.replace(/\s+/g, "");
+  const defaultWavFilename = `${safeName}${dateStr}.wav`;
 
   const conflictingEntry = (): OverrideEntry | null => {
     if (!active) return null;
@@ -131,6 +136,23 @@ export function OverrideEditDialog({ set, entryIndex, allSets, variables, onClos
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleWavUploaded = async (uploadedFilename: string) => {
+    if (!matchedVar) { onClose(); return; }
+    try {
+      const res = await fetch(`/api/wxcc/variables/${matchedVar.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...matchedVar, value: uploadedFilename, defaultValue: uploadedFilename }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body.error ?? "Variable update failed");
+      toast.success(`Variable "${matchedVar.name}" updated to "${uploadedFilename}"`);
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+    onClose();
   };
 
   const tz = tzAbbr(set.timezone);
@@ -211,24 +233,17 @@ export function OverrideEditDialog({ set, entryIndex, allSets, variables, onClos
         {/* ── Step 3a: WAV recording ────────────────────────────── */}
         {step === "wav" && (
           <div className="space-y-4">
-            {wavFilename && (
-              <div className="rounded-md bg-blue-50 border border-blue-200 p-3 text-sm text-blue-800">
-                Record the message for: <span className="font-mono font-semibold">{wavFilename}</span>
-              </div>
-            )}
-            <AudioRecorder defaultFilename={wavFilename ?? undefined} />
-            {matchedVar && (
-              <>
-                <Separator />
-                <p className="text-xs text-gray-500">
-                  After uploading, confirm the filename is set in the variable:
-                </p>
-                <VariableEditor variable={matchedVar} />
-              </>
-            )}
+            <p className="text-sm text-gray-600">
+              Record a message below. After uploading, the filename will be automatically saved to{" "}
+              <span className="font-mono text-xs">{matchedVar?.name ?? "the linked variable"}</span>.
+            </p>
+            <AudioRecorder
+              defaultFilename={defaultWavFilename}
+              onUploaded={handleWavUploaded}
+            />
             <Separator />
             <div className="flex justify-end">
-              <Button variant="outline" onClick={onClose}>Done</Button>
+              <Button variant="outline" onClick={onClose}>Skip / Done</Button>
             </div>
           </div>
         )}
