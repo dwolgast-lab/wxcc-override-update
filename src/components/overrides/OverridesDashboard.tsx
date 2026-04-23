@@ -1,23 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { OverrideEditDialog } from "./OverrideEditDialog";
 import { CalendarClock, RefreshCw, AlertCircle } from "lucide-react";
-import { toast } from "sonner";
 import type { OverrideSet, OverrideEntry } from "@/lib/wxcc-api";
 import { tzAbbr, fmtDate, fmtTime, fmtRecurrence, isRecurring, endDateLabel, findOverrideVariable } from "@/lib/override-format";
-
-export interface GlobalVariable {
-  id: string;
-  name: string;
-  value: string;
-  defaultValue?: string;
-  type: string;
-  description?: string;
-}
+import { useOverrideData } from "@/hooks/useOverrideData";
 
 function EntryMeta({ entry, timezone }: { entry: OverrideEntry; timezone: string }) {
   const tz = tzAbbr(timezone);
@@ -42,42 +33,8 @@ function EntryMeta({ entry, timezone }: { entry: OverrideEntry; timezone: string
 }
 
 export function OverridesDashboard() {
-  const [sets, setSets] = useState<OverrideSet[]>([]);
-  const [variables, setVariables] = useState<GlobalVariable[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { sets, variables, loading, error, refresh } = useOverrideData();
   const [selected, setSelected] = useState<{ set: OverrideSet; entryIndex: number } | null>(null);
-
-  const fetchData = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const [ovRes, varRes] = await Promise.all([
-        fetch("/api/wxcc/overrides"),
-        fetch("/api/wxcc/variables"),
-      ]);
-
-      if (!ovRes.ok) {
-        const body = await ovRes.json().catch(() => ({}));
-        throw new Error(body.error ?? `Overrides request failed (${ovRes.status})`);
-      }
-      if (!varRes.ok) {
-        const body = await varRes.json().catch(() => ({}));
-        throw new Error(body.error ?? `Variables request failed (${varRes.status})`);
-      }
-
-      const [ovData, varData] = await Promise.all([ovRes.json(), varRes.json()]);
-      setSets(Array.isArray(ovData) ? ovData : []);
-      setVariables(Array.isArray(varData) ? varData : []);
-    } catch (err: any) {
-      setError(err.message);
-      toast.error(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => { fetchData(); }, []);
 
   const totalEntries = sets.reduce((sum, s) => sum + (s.overrides?.length ?? 0), 0);
   const activeEntries = sets.reduce(
@@ -94,7 +51,7 @@ export function OverridesDashboard() {
             {totalEntries} total &mdash; {activeEntries} active
           </p>
         </div>
-        <Button variant="outline" size="sm" onClick={fetchData} disabled={loading} className="gap-2">
+        <Button variant="outline" size="sm" onClick={refresh} disabled={loading} className="gap-2">
           <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
           Refresh
         </Button>
@@ -139,45 +96,45 @@ export function OverridesDashboard() {
             {set.overrides?.map((entry, idx) => {
               const msgMatch = findOverrideVariable(entry.name, variables);
               return (
-              <Card
-                key={idx}
-                className={`cursor-pointer transition-all hover:shadow-md hover:-translate-y-0.5 border-2 ${
-                  entry.workingHours
-                    ? "border-green-300 bg-green-50/50"
-                    : "border-transparent"
-                }`}
-                onClick={() => setSelected({ set, entryIndex: idx })}
-              >
-                <CardHeader className="pb-2 pt-4 px-4">
-                  <div className="flex items-start justify-between gap-2">
-                    <CardTitle className="text-base font-semibold leading-tight">{entry.name}</CardTitle>
-                    <div className="flex gap-1.5 shrink-0">
-                      {msgMatch && (
+                <Card
+                  key={idx}
+                  className={`cursor-pointer transition-all hover:shadow-md hover:-translate-y-0.5 border-2 ${
+                    entry.workingHours
+                      ? "border-green-300 bg-green-50/50"
+                      : "border-transparent"
+                  }`}
+                  onClick={() => setSelected({ set, entryIndex: idx })}
+                >
+                  <CardHeader className="pb-2 pt-4 px-4">
+                    <div className="flex items-start justify-between gap-2">
+                      <CardTitle className="text-base font-semibold leading-tight">{entry.name}</CardTitle>
+                      <div className="flex gap-1.5 shrink-0">
+                        {msgMatch && (
+                          <Badge
+                            variant="outline"
+                            className={
+                              msgMatch.type === "TTS"   ? "border-blue-400 text-blue-700" :
+                              msgMatch.type === "WAV"   ? "border-orange-400 text-orange-700" :
+                              "border-gray-400 text-gray-500"
+                            }
+                          >
+                            {msgMatch.type === "FIXED" ? "Pre-recorded" : msgMatch.type}
+                          </Badge>
+                        )}
                         <Badge
-                          variant="outline"
-                          className={
-                            msgMatch.type === "TTS"   ? "border-blue-400 text-blue-700" :
-                            msgMatch.type === "WAV"   ? "border-orange-400 text-orange-700" :
-                            "border-gray-400 text-gray-500"
-                          }
+                          variant={entry.workingHours ? "default" : "secondary"}
+                          className={entry.workingHours ? "bg-green-600" : ""}
                         >
-                          {msgMatch.type === "FIXED" ? "Pre-recorded" : msgMatch.type}
+                          {entry.workingHours ? "Active" : "Inactive"}
                         </Badge>
-                      )}
-                      <Badge
-                        variant={entry.workingHours ? "default" : "secondary"}
-                        className={entry.workingHours ? "bg-green-600" : ""}
-                      >
-                        {entry.workingHours ? "Active" : "Inactive"}
-                      </Badge>
+                      </div>
                     </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="px-4 pb-4 space-y-1.5">
-                  <EntryMeta entry={entry} timezone={set.timezone} />
-                  <p className="text-xs text-gray-400 font-medium pt-0.5">Click to edit &rarr;</p>
-                </CardContent>
-              </Card>
+                  </CardHeader>
+                  <CardContent className="px-4 pb-4 space-y-1.5">
+                    <EntryMeta entry={entry} timezone={set.timezone} />
+                    <p className="text-xs text-gray-400 font-medium pt-0.5">Click to edit &rarr;</p>
+                  </CardContent>
+                </Card>
               );
             })}
           </div>
@@ -191,9 +148,7 @@ export function OverridesDashboard() {
           allSets={sets}
           variables={variables}
           onClose={() => setSelected(null)}
-          onSaved={() => {
-            fetchData(); // refresh list; dialog controls its own close timing
-          }}
+          onSaved={refresh}
         />
       )}
     </div>

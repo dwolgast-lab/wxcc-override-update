@@ -11,8 +11,7 @@ import { VariableEditor } from "./VariableEditor";
 import { AudioRecorder } from "@/components/audio/AudioRecorder";
 import { toast } from "sonner";
 import { ChevronDown, ChevronLeft, Mic, Type } from "lucide-react";
-import type { OverrideSet, OverrideEntry } from "@/lib/wxcc-api";
-import type { GlobalVariable } from "./OverridesDashboard";
+import type { OverrideSet, OverrideEntry, GlobalVariable } from "@/lib/wxcc-api";
 import { tzAbbr, fmtDate, fmtTime, fmtRecurrence, isRecurring, endDateLabel, findOverrideVariable, overrideNameKey } from "@/lib/override-format";
 
 type Step = "edit" | "wav" | "tts";

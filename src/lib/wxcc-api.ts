@@ -90,7 +90,7 @@ export interface GlobalVariable {
   name: string;
   value: string;
   defaultValue?: string;
-  type: "string" | "boolean" | "integer" | "decimal" | "date";
+  type: string;
   description?: string;
   agentEditable?: boolean;
   reportable?: boolean;
