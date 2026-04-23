@@ -5,16 +5,17 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 
 import { VariableEditor } from "./VariableEditor";
 import { AudioRecorder } from "@/components/audio/AudioRecorder";
 import { toast } from "sonner";
-import { ChevronDown, Mic, Type } from "lucide-react";
+import { ChevronDown, ChevronLeft, Mic, Type } from "lucide-react";
 import type { OverrideSet, OverrideEntry } from "@/lib/wxcc-api";
 import type { GlobalVariable } from "./OverridesDashboard";
 import { tzAbbr, fmtDate, fmtTime, fmtRecurrence, isRecurring, endDateLabel, findOverrideVariable, overrideNameKey } from "@/lib/override-format";
 
-type Step = "edit" | "message-prompt" | "wav" | "tts";
+type Step = "edit" | "wav" | "tts";
 
 interface Props {
   set: OverrideSet;
@@ -69,7 +70,6 @@ export function OverrideEditDialog({ set, entryIndex, allSets, variables, onClos
   const msgMatch = findOverrideVariable(entry.name, variables);
   const messageType = msgMatch?.type ?? null;
   const matchedVar  = msgMatch?.variable ?? null;
-  const messageStep: Step = messageType === "WAV" ? "wav" : "tts";
 
   const now = new Date();
   const pad = (n: number) => String(n).padStart(2, "0");
@@ -122,15 +122,9 @@ export function OverrideEditDialog({ set, entryIndex, allSets, variables, onClos
           "Save failed";
         throw new Error(reason);
       }
-
-      if (active && messageType !== "FIXED") {
-        onSaved();
-        setStep("message-prompt");
-      } else {
-        toast.success(active ? "Override activated" : "Override deactivated");
-        onSaved();
-        onClose();
-      }
+      toast.success(active ? "Override activated" : "Override deactivated");
+      onSaved();
+      onClose();
     } catch (err: any) {
       toast.error(err.message);
     } finally {
@@ -142,7 +136,7 @@ export function OverrideEditDialog({ set, entryIndex, allSets, variables, onClos
     if (!matchedVar) {
       const expected = `global${overrideNameKey(entry.name)}WAV`;
       toast.warning(`Recording uploaded, but no variable found. Create a global variable named "${expected}" to link the filename automatically.`);
-      onClose();
+      setStep("edit");
       return;
     }
     try {
@@ -157,10 +151,11 @@ export function OverrideEditDialog({ set, entryIndex, allSets, variables, onClos
     } catch (err: any) {
       toast.error(err.message);
     }
-    onClose();
+    setStep("edit");
   };
 
   const tz = tzAbbr(set.timezone);
+  const currentMessage = matchedVar?.defaultValue || matchedVar?.value || null;
 
   return (
     <Dialog open onOpenChange={(v) => !v && onClose()}>
@@ -170,9 +165,11 @@ export function OverrideEditDialog({ set, entryIndex, allSets, variables, onClos
           {set.name && <p className="text-sm text-gray-500">Set: {set.name}</p>}
         </DialogHeader>
 
-        {/* ── Step 1: edit ─────────────────────────────────────── */}
+        {/* ── Edit step ─────────────────────────────────────────── */}
         {step === "edit" && (
           <div className="space-y-5">
+
+            {/* Status toggle */}
             <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50 border">
               <div>
                 <p className="font-medium text-sm">Override Active</p>
@@ -183,6 +180,7 @@ export function OverrideEditDialog({ set, entryIndex, allSets, variables, onClos
               <Switch checked={active} onCheckedChange={setActive} />
             </div>
 
+            {/* Schedule */}
             <div className="text-xs text-gray-500 space-y-0.5 px-1">
               {isRecurring(entry) ? (
                 <>
@@ -202,6 +200,60 @@ export function OverrideEditDialog({ set, entryIndex, allSets, variables, onClos
 
             <Separator />
 
+            {/* Message section */}
+            <div className="space-y-2">
+              <p className="text-sm font-semibold text-gray-700">Caller Message</p>
+
+              {messageType === "TTS" && matchedVar && (
+                <div className="flex items-start justify-between gap-3 p-3 rounded-lg bg-gray-50 border">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Badge variant="outline" className="border-blue-400 text-blue-700 text-xs">TTS</Badge>
+                      <span className="text-xs text-gray-500 font-mono">{matchedVar.name}</span>
+                    </div>
+                    {currentMessage && (
+                      <p className="text-xs text-gray-500 line-clamp-2">{currentMessage}</p>
+                    )}
+                  </div>
+                  <Button size="sm" variant="outline" onClick={() => setStep("tts")} className="gap-1.5 shrink-0">
+                    <Type className="w-3.5 h-3.5" /> Update text
+                  </Button>
+                </div>
+              )}
+
+              {messageType === "WAV" && matchedVar && (
+                <div className="flex items-start justify-between gap-3 p-3 rounded-lg bg-gray-50 border">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Badge variant="outline" className="border-orange-400 text-orange-700 text-xs">WAV</Badge>
+                      <span className="text-xs text-gray-500 font-mono">{matchedVar.name}</span>
+                    </div>
+                    {currentMessage && (
+                      <p className="text-xs text-gray-500 font-mono">{currentMessage}</p>
+                    )}
+                  </div>
+                  <Button size="sm" variant="outline" onClick={() => setStep("wav")} className="gap-1.5 shrink-0">
+                    <Mic className="w-3.5 h-3.5" /> Record new
+                  </Button>
+                </div>
+              )}
+
+              {messageType === "FIXED" && (
+                <p className="text-sm text-gray-400 italic px-1">Pre-recorded message — no update needed.</p>
+              )}
+
+              {!messageType && (
+                <p className="text-sm text-gray-400 italic px-1">
+                  No message variable found. Expected:{" "}
+                  <span className="font-mono text-xs">global{overrideNameKey(entry.name)}TTS</span>
+                  {" "}or{" "}
+                  <span className="font-mono text-xs">global{overrideNameKey(entry.name)}WAV</span>.
+                </p>
+              )}
+            </div>
+
+            <Separator />
+
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={onClose}>Cancel</Button>
               <Button onClick={saveOverride} disabled={saving}>
@@ -211,31 +263,7 @@ export function OverrideEditDialog({ set, entryIndex, allSets, variables, onClos
           </div>
         )}
 
-        {/* ── Step 2: message prompt ────────────────────────────── */}
-        {step === "message-prompt" && (
-          <div className="space-y-5">
-            <div className="rounded-lg bg-green-50 border border-green-200 p-4 text-sm text-green-800 font-medium">
-              Override activated successfully.
-            </div>
-            <p className="text-sm text-gray-700">
-              {messageStep === "wav"
-                ? "Do you need to record a new message to be played to callers?"
-                : "Do you need to enter message text to be played to callers via TTS?"
-              }
-            </p>
-            <div className="flex gap-3">
-              <Button className="gap-2" onClick={() => setStep(messageStep)}>
-                {messageStep === "wav"
-                  ? <><Mic className="w-4 h-4" /> Yes, record a new message</>
-                  : <><Type className="w-4 h-4" /> Yes, enter TTS text</>
-                }
-              </Button>
-              <Button variant="outline" onClick={onClose}>No, skip</Button>
-            </div>
-          </div>
-        )}
-
-        {/* ── Step 3a: WAV recording ────────────────────────────── */}
+        {/* ── WAV recording ─────────────────────────────────────── */}
         {step === "wav" && (
           <div className="space-y-4">
             <p className="text-sm text-gray-600">
@@ -247,30 +275,33 @@ export function OverrideEditDialog({ set, entryIndex, allSets, variables, onClos
               onUploaded={handleWavUploaded}
             />
             <Separator />
-            <div className="flex justify-end">
-              <Button variant="outline" onClick={onClose}>Skip / Done</Button>
+            <div className="flex justify-between">
+              <Button variant="ghost" onClick={() => setStep("edit")} className="gap-1.5">
+                <ChevronLeft className="w-4 h-4" /> Back
+              </Button>
+              <Button variant="outline" onClick={() => setStep("edit")}>Done</Button>
             </div>
           </div>
         )}
 
-        {/* ── Step 3b: TTS editing ──────────────────────────────── */}
+        {/* ── TTS editing ───────────────────────────────────────── */}
         {step === "tts" && (
           <div className="space-y-4">
-            <p className="text-sm text-gray-600">
-              Update the text-to-speech message for this override.
-            </p>
             <SsmlTips />
             {matchedVar ? (
               <VariableEditor variable={matchedVar} />
             ) : (
               <p className="text-sm text-gray-400 italic">
-                No matching variable found. Expected a variable named{" "}
-                <span className="font-mono">global{entry.name.replace(/\s+/g, "")}TTS</span>.
+                No matching variable found. Expected:{" "}
+                <span className="font-mono">global{overrideNameKey(entry.name)}TTS</span>.
               </p>
             )}
             <Separator />
-            <div className="flex justify-end">
-              <Button variant="outline" onClick={onClose}>Done</Button>
+            <div className="flex justify-between">
+              <Button variant="ghost" onClick={() => setStep("edit")} className="gap-1.5">
+                <ChevronLeft className="w-4 h-4" /> Back
+              </Button>
+              <Button variant="outline" onClick={() => setStep("edit")}>Done</Button>
             </div>
           </div>
         )}
