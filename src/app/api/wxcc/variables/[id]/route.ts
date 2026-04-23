@@ -14,6 +14,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     const result = await updateGlobalVariable(orgId, id, body);
     return NextResponse.json(result ?? { success: true });
   } catch (err: any) {
+    console.error("[variables PUT]", orgId, id, JSON.stringify(body), err.message);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
