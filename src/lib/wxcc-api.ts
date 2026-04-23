@@ -126,8 +126,7 @@ export async function uploadAudioFile(orgId: string, filename: string, wavBuffer
   const token = await getValidToken();
 
   const form = new FormData();
-  form.set("mediaFile", new File([new Uint8Array(wavBuffer)], filename, { type: "audio/wav" }));
-  form.set("name", filename.replace(/\.wav$/i, ""));
+  form.set("mediaFile", new File([new Uint8Array(wavBuffer)], filename, { type: "audio/x-wav" }));
 
   const res = await fetch(`${WXCC_BASE}/organization/${orgId}/audio-file`, {
     method: "POST",
