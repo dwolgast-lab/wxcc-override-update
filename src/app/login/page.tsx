@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Suspense } from "react";
+import { APP_VERSION } from "@/lib/version";
 
 const ERROR_MESSAGES: Record<string, string> = {
   invalid_state: "Login session expired. Please try again.",
@@ -18,16 +19,30 @@ function LoginCard() {
 
   return (
     <Card className="w-full max-w-sm shadow-lg">
-      <CardHeader className="text-center space-y-2">
-        <div className="mx-auto w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center">
-          <svg className="w-9 h-9 text-white" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" />
-          </svg>
+      <CardHeader className="text-center space-y-4">
+        {/* Dual logos */}
+        <div className="flex items-center justify-center gap-5 py-2">
+          <img
+            src="/logos/ttec-digital.svg"
+            alt="TTEC Digital"
+            className="h-10 w-auto object-contain"
+            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+          />
+          <span className="text-gray-300 text-xl select-none">|</span>
+          <img
+            src="/logos/webex-cc.png"
+            alt="Webex Contact Center"
+            className="h-10 w-auto object-contain"
+            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+          />
         </div>
-        <CardTitle className="text-xl font-semibold">WxCC Override Manager</CardTitle>
-        <CardDescription>
-          Sign in with your Webex account to manage Business Hours Overrides for your contact center.
-        </CardDescription>
+
+        <div>
+          <CardTitle className="text-xl font-semibold">Override Manager</CardTitle>
+          <CardDescription className="mt-1">
+            Sign in with your Webex account to manage Business Hours Overrides for your contact center.
+          </CardDescription>
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         {error && (
@@ -55,7 +70,7 @@ export default function LoginPage() {
         <LoginCard />
       </Suspense>
       <p className="mt-6 text-xs text-gray-400">
-        WxCC Override Manager &mdash; Not affiliated with Cisco
+        v{APP_VERSION} &mdash; Built by TTEC Digital
       </p>
     </div>
   );

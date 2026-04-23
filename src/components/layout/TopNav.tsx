@@ -53,7 +53,18 @@ export function TopNav() {
     <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
       <div className="container mx-auto max-w-5xl px-4 h-14 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+          <img
+            src="/logos/webex-cc.png"
+            alt="Webex Contact Center"
+            className="h-8 w-auto object-contain flex-shrink-0"
+            onError={(e) => {
+              const img = e.currentTarget as HTMLImageElement;
+              img.style.display = "none";
+              const fallback = img.nextElementSibling as HTMLElement | null;
+              if (fallback) fallback.style.display = "flex";
+            }}
+          />
+          <div className="w-8 h-8 bg-blue-600 rounded-lg items-center justify-center flex-shrink-0 hidden">
             <span className="text-white text-xs font-bold">WX</span>
           </div>
           <span className="font-semibold text-gray-900 hidden sm:block">

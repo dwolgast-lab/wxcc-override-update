@@ -159,7 +159,7 @@ export function OverrideEditDialog({ set, entryIndex, allSets, variables, onClos
 
   return (
     <Dialog open onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[min(42rem,calc(100vw-2rem))] max-w-none sm:max-w-none max-h-[90vh] overflow-y-auto overflow-x-hidden">
         <DialogHeader>
           <DialogTitle className="text-lg">{entry.name}</DialogTitle>
           {set.name && <p className="text-sm text-gray-500">Set: {set.name}</p>}
@@ -167,7 +167,7 @@ export function OverrideEditDialog({ set, entryIndex, allSets, variables, onClos
 
         {/* ── Edit step ─────────────────────────────────────────── */}
         {step === "edit" && (
-          <div className="space-y-5">
+          <div className="space-y-5 min-w-0">
 
             {/* Status toggle */}
             <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50 border">
@@ -205,14 +205,14 @@ export function OverrideEditDialog({ set, entryIndex, allSets, variables, onClos
               <p className="text-sm font-semibold text-gray-700">Caller Message</p>
 
               {messageType === "TTS" && matchedVar && (
-                <div className="flex items-start justify-between gap-3 p-3 rounded-lg bg-gray-50 border">
-                  <div className="min-w-0">
+                <div className="flex items-start justify-between gap-3 p-3 rounded-lg bg-gray-50 border overflow-hidden">
+                  <div className="min-w-0 flex-1 overflow-hidden">
                     <div className="flex items-center gap-2 mb-1">
-                      <Badge variant="outline" className="border-blue-400 text-blue-700 text-xs">TTS</Badge>
-                      <span className="text-xs text-gray-500 font-mono">{matchedVar.name}</span>
+                      <Badge variant="outline" className="border-blue-400 text-blue-700 text-xs shrink-0">TTS</Badge>
+                      <span className="text-xs text-gray-500 font-mono truncate">{matchedVar.name}</span>
                     </div>
                     {currentMessage && (
-                      <p className="text-xs text-gray-500 line-clamp-2">{currentMessage}</p>
+                      <p className="text-xs text-gray-500 line-clamp-2 break-words">{currentMessage}</p>
                     )}
                   </div>
                   <Button size="sm" variant="outline" onClick={() => setStep("tts")} className="gap-1.5 shrink-0">
@@ -222,14 +222,14 @@ export function OverrideEditDialog({ set, entryIndex, allSets, variables, onClos
               )}
 
               {messageType === "WAV" && matchedVar && (
-                <div className="flex items-start justify-between gap-3 p-3 rounded-lg bg-gray-50 border">
-                  <div className="min-w-0">
+                <div className="flex items-start justify-between gap-3 p-3 rounded-lg bg-gray-50 border overflow-hidden">
+                  <div className="min-w-0 flex-1 overflow-hidden">
                     <div className="flex items-center gap-2 mb-1">
-                      <Badge variant="outline" className="border-orange-400 text-orange-700 text-xs">WAV</Badge>
-                      <span className="text-xs text-gray-500 font-mono">{matchedVar.name}</span>
+                      <Badge variant="outline" className="border-orange-400 text-orange-700 text-xs shrink-0">WAV</Badge>
+                      <span className="text-xs text-gray-500 font-mono truncate">{matchedVar.name}</span>
                     </div>
                     {currentMessage && (
-                      <p className="text-xs text-gray-500 font-mono">{currentMessage}</p>
+                      <p className="text-xs text-gray-500 font-mono truncate">{currentMessage}</p>
                     )}
                   </div>
                   <Button size="sm" variant="outline" onClick={() => setStep("wav")} className="gap-1.5 shrink-0">
@@ -243,7 +243,7 @@ export function OverrideEditDialog({ set, entryIndex, allSets, variables, onClos
               )}
 
               {!messageType && (
-                <p className="text-sm text-gray-400 italic px-1">
+                <p className="text-sm text-gray-400 italic px-1 break-all">
                   No message variable found. Expected:{" "}
                   <span className="font-mono text-xs">global{overrideNameKey(entry.name)}TTS</span>
                   {" "}or{" "}
@@ -265,11 +265,11 @@ export function OverrideEditDialog({ set, entryIndex, allSets, variables, onClos
 
         {/* ── WAV recording ─────────────────────────────────────── */}
         {step === "wav" && (
-          <div className="space-y-4">
-            <p className="text-sm text-gray-600">
+          <div className="space-y-4 min-w-0">
+            <p className="text-sm text-gray-600 break-words">
               Record a message. When you're happy with it, edit the filename if needed then click{" "}
               <strong>Accept</strong> to upload. The filename will be saved to{" "}
-              <span className="font-mono text-xs">{matchedVar?.name ?? "the linked variable"}</span>{" "}
+              <span className="font-mono text-xs break-all">{matchedVar?.name ?? "the linked variable"}</span>{" "}
               automatically.
             </p>
             <div className="rounded-lg border p-4">
@@ -290,7 +290,7 @@ export function OverrideEditDialog({ set, entryIndex, allSets, variables, onClos
 
         {/* ── TTS editing ───────────────────────────────────────── */}
         {step === "tts" && (
-          <div className="space-y-4">
+          <div className="space-y-4 min-w-0">
             <SsmlTips />
             {matchedVar ? (
               <VariableEditor variable={matchedVar} />
