@@ -9,6 +9,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   invalid_state: "Login session expired. Please try again.",
   auth_failed: "Authentication failed. Check your Webex credentials.",
   access_denied: "Access was denied.",
+  invalid_scope: "The app is not authorized for the required scopes. Contact your administrator.",
 };
 
 function LoginCard() {
@@ -31,7 +32,7 @@ function LoginCard() {
       <CardContent className="space-y-4">
         {error && (
           <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">
-            {ERROR_MESSAGES[error] ?? "An error occurred. Please try again."}
+            {ERROR_MESSAGES[error] ?? `An error occurred (${error}). Please try again.`}
           </div>
         )}
         <a href="/api/auth/login" className="block w-full">

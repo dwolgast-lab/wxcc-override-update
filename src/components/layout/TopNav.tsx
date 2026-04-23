@@ -5,12 +5,32 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { FeedbackForm } from "@/components/layout/FeedbackForm";
-import { MessageSquare, LogOut, User, Menu } from "lucide-react";
+import { MessageSquare, LogOut, Menu } from "lucide-react";
 
 interface UserInfo {
   displayName?: string;
   email?: string;
   orgId?: string;
+}
+
+function initials(user: UserInfo): string {
+  if (user.displayName) {
+    const parts = user.displayName.trim().split(/\s+/);
+    return parts.length >= 2
+      ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+      : parts[0].slice(0, 2).toUpperCase();
+  }
+  // Fall back to the username portion of the email
+  const emailUser = user.email?.split("@")[0];
+  return (emailUser?.[0] ?? "?").toUpperCase();
+}
+
+function UserAvatar({ user }: { user: UserInfo }) {
+  return (
+    <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-semibold flex-shrink-0">
+      {initials(user)}
+    </div>
+  );
 }
 
 export function TopNav() {
@@ -44,9 +64,11 @@ export function TopNav() {
         {/* Desktop actions */}
         <div className="hidden sm:flex items-center gap-2">
           {user && (
-            <div className="flex items-center gap-2 text-sm text-gray-600 mr-2">
-              <User className="w-4 h-4" />
-              <span>{user.displayName ?? user.email}</span>
+            <div className="flex items-center gap-2 mr-2">
+              <UserAvatar user={user} />
+              <span className="text-sm font-medium text-gray-700">
+                {user.displayName ?? user.email}
+              </span>
             </div>
           )}
           <Button
@@ -64,8 +86,9 @@ export function TopNav() {
           </Button>
         </div>
 
-        {/* Mobile menu */}
-        <div className="sm:hidden">
+        {/* Mobile: avatar visible in header, full menu in sheet */}
+        <div className="sm:hidden flex items-center gap-2">
+          {user && <UserAvatar user={user} />}
           <Sheet>
             <SheetTrigger className="inline-flex items-center justify-center rounded-md p-2 text-gray-600 hover:bg-gray-100">
               <Menu className="w-5 h-5" />
@@ -77,9 +100,12 @@ export function TopNav() {
               <div className="mt-4 space-y-4">
                 {user && (
                   <>
-                    <div className="text-sm text-gray-600">
-                      <p className="font-medium">{user.displayName}</p>
-                      <p className="text-xs text-gray-400">{user.email}</p>
+                    <div className="flex items-center gap-3">
+                      <UserAvatar user={user} />
+                      <div className="text-sm">
+                        <p className="font-medium text-gray-900">{user.displayName}</p>
+                        <p className="text-xs text-gray-400">{user.email}</p>
+                      </div>
                     </div>
                     <Separator />
                   </>

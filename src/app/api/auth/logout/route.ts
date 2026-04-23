@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 
-export async function POST() {
+export async function POST(req: NextRequest) {
   const session = await getSession();
   session.destroy();
-  return NextResponse.redirect(new URL("/login", process.env.WEBEX_REDIRECT_URI!.replace("/api/auth/callback", "")));
+  return NextResponse.redirect(new URL("/login", req.url));
 }

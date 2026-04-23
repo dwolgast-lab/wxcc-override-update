@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
-import { updateOverride } from "@/lib/wxcc-api";
+import { updateOverrideSet } from "@/lib/wxcc-api";
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getSession();
@@ -11,7 +11,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const orgId = session.orgId ?? process.env.WXCC_ORG_ID ?? "";
 
   try {
-    const result = await updateOverride(orgId, id, body);
+    const result = await updateOverrideSet(orgId, id, body);
     return NextResponse.json(result ?? { success: true });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });

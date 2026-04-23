@@ -10,10 +10,14 @@ import { Mic, Square, Play, Pause, Upload, Trash2, Loader2 } from "lucide-react"
 
 type RecordingState = "idle" | "recording" | "recorded" | "converting" | "uploading";
 
-export function AudioRecorder() {
+interface AudioRecorderProps {
+  defaultFilename?: string;
+}
+
+export function AudioRecorder({ defaultFilename }: AudioRecorderProps) {
   const [state, setState] = useState<RecordingState>("idle");
   const [duration, setDuration] = useState(0);
-  const [filename, setFilename] = useState("override-message.wav");
+  const [filename, setFilename] = useState(defaultFilename ?? "override-message.wav");
   const [convertedBlob, setConvertedBlob] = useState<Blob | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 

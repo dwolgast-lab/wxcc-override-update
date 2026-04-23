@@ -30,7 +30,7 @@ async function wxccFetch(path: string, init?: RequestInit) {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
-      "Accept": "application/json",
+      Accept: "application/json",
       ...(init?.headers ?? {}),
     },
   });
@@ -46,32 +46,44 @@ async function wxccFetch(path: string, init?: RequestInit) {
 
 // ── Business Hours Overrides ──────────────────────────────────────────────────
 
-export interface Override {
-  id: string;
+export interface OverrideEntry {
   name: string;
-  active: boolean;
   description?: string;
-  startDate?: string;
-  endDate?: string;
+  startDateTime: string;  // "2026-04-24T09:00"
+  endDateTime: string;
+  workingHours: boolean;  // false = closed override, true = open override
+  frequency: string;      // "DontRepeat" | "Daily" | "Weekly" | "Monthly"
+  active?: boolean;
+  recurrence?: {
+    interval: number;
+    daysOfWeek?: string[];
+    daysOfMonth?: number[];
+  };
 }
 
-export async function listOverrides(orgId: string): Promise<Override[]> {
-  const data = await wxccFetch(`/organization/${orgId}/business-hours-override`);
+export interface OverrideSet {
+  id: string;
+  name: string;
+  description?: string;
+  timezone: string;
+  overrides: OverrideEntry[];
+  createdTime?: number;
+  lastUpdatedTime?: number;
+}
+
+export async function listOverrideSets(orgId: string): Promise<OverrideSet[]> {
+  const data = await wxccFetch(`/organization/${orgId}/v2/overrides`);
   return data?.data ?? data ?? [];
 }
 
-export async function getOverride(orgId: string, id: string): Promise<Override> {
-  return wxccFetch(`/organization/${orgId}/business-hours-override/${id}`);
-}
-
-export async function updateOverride(orgId: string, id: string, payload: Partial<Override>) {
-  return wxccFetch(`/organization/${orgId}/business-hours-override/${id}`, {
+export async function updateOverrideSet(orgId: string, setId: string, payload: Omit<OverrideSet, "createdTime" | "lastUpdatedTime">) {
+  return wxccFetch(`/organization/${orgId}/overrides/${setId}`, {
     method: "PUT",
     body: JSON.stringify(payload),
   });
 }
 
-// ── Global Variables ──────────────────────────────────────────────────────────
+// ── CAD (Global) Variables ────────────────────────────────────────────────────
 
 export interface GlobalVariable {
   id: string;
@@ -84,12 +96,12 @@ export interface GlobalVariable {
 }
 
 export async function listGlobalVariables(orgId: string): Promise<GlobalVariable[]> {
-  const data = await wxccFetch(`/organization/${orgId}/global-variable`);
+  const data = await wxccFetch(`/organization/${orgId}/v2/cad-variable`);
   return data?.data ?? data ?? [];
 }
 
 export async function updateGlobalVariable(orgId: string, id: string, value: string) {
-  return wxccFetch(`/organization/${orgId}/global-variable/${id}`, {
+  return wxccFetch(`/organization/${orgId}/v2/cad-variable/${id}`, {
     method: "PUT",
     body: JSON.stringify({ value }),
   });
@@ -105,7 +117,7 @@ export interface AudioFile {
 }
 
 export async function listAudioFiles(orgId: string): Promise<AudioFile[]> {
-  const data = await wxccFetch(`/organization/${orgId}/file`);
+  const data = await wxccFetch(`/organization/${orgId}/v2/audio-file`);
   return data?.data ?? data ?? [];
 }
 
@@ -116,7 +128,7 @@ export async function uploadAudioFile(orgId: string, filename: string, wavBuffer
   form.set("file", new File([new Uint8Array(wavBuffer)], filename, { type: "audio/wav" }));
   form.set("name", filename.replace(/\.wav$/i, ""));
 
-  const res = await fetch(`${WXCC_BASE}/organization/${orgId}/file`, {
+  const res = await fetch(`${WXCC_BASE}/organization/${orgId}/v2/audio-file`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
     body: form,
