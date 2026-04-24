@@ -37,7 +37,11 @@ You do not need a full administrator role. Your administrator can grant these pe
 1. Navigate to the app URL provided by your administrator.
 2. Click **Sign in with Webex**.
 3. Enter your Webex credentials on the Webex login page.
-4. You are redirected back to the Override Manager dashboard.
+4. **First login only:** Webex displays a consent screen listing the permissions the app needs (`cjp:config` and `cjp:config_write`). Click **Accept** to continue. This screen appears only once — subsequent logins go directly to the dashboard.
+
+> 📷 **[SCREENSHOT PLACEHOLDER]** Capture the Webex OAuth consent screen showing the app name, the two permission scopes listed, and the Accept button.
+
+5. You are redirected back to the Override Manager dashboard.
 
 > 📷 **Screenshot suggestion:** Capture the login page showing the TTEC Digital and Webex Contact Center logos, the "Sign in with Webex" button, and the permissions note below it.
 

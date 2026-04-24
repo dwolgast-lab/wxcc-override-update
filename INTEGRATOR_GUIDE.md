@@ -159,7 +159,10 @@ Before configuring Control Hub, confirm the OAuth flow works end-to-end.
 2. You should see the login page with the TTEC Digital and Webex CC logos.
 3. Click **Sign in with Webex**.
 4. You are redirected to `webexapis.com` — sign in with your **administrator** Webex account.
-5. If prompted, review and approve the requested permissions (the `cjp:config` and `cjp:config_write` scopes).
+5. **First-time only — OAuth consent screen:** After signing in, Webex displays a consent screen listing the permissions the app is requesting (`cjp:config` and `cjp:config_write`). Click **Accept** to grant access. This screen appears only once per user account; subsequent logins go directly to the dashboard.
+
+> 📷 **[SCREENSHOT PLACEHOLDER]** Capture the Webex OAuth consent screen showing the app name, the two `cjp:` scopes listed, and the Accept button.
+
 6. You should be redirected back to the app and land on the **Business Hours Overrides** dashboard.
 
 > 📷 **Screenshot suggestion:** Capture the successful post-login dashboard, even if it shows no overrides yet (the empty state message is fine).
@@ -320,7 +323,8 @@ With everything configured, perform a full end-to-end test before handing off to
 
 1. Open the app in a private/incognito browser window.
 2. Sign in with a **non-administrator** user account that has the Override Operator profile.
-3. Verify the dashboard loads and shows only the overrides that user's profile permits.
+3. On first login, this user will also see the **OAuth consent screen** — they must click **Accept** before the app grants access. This is a one-time step; future logins proceed directly to the dashboard.
+4. Verify the dashboard loads and shows only the overrides that user's profile permits.
 
 > ✅ Expected: Dashboard loads with the correct set of overrides visible.  
 > ❌ If "invalid scope" error: Confirm the user's Webex role includes Contact Center access.  
