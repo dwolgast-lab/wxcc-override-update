@@ -21,6 +21,7 @@ Built by **TTEC Digital**.
 |---|---|
 | [User Guide](USER_GUIDE.md) | End users managing overrides day-to-day |
 | [Admin Guide](ADMIN_GUIDE.md) | Administrators deploying and configuring the app |
+| [Integrator's Guide](INTEGRATOR_GUIDE.md) | Technical integrators connecting the app to a new tenant |
 | [Changelog](CHANGELOG.md) | All changes by version |
 
 ---

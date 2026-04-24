@@ -20,6 +20,7 @@ Versioning follows [Semantic Versioning](https://semver.org/): MAJOR.MINOR.PATCH
 - Extracted override/variable data fetching to `src/hooks/useOverrideData.ts`; `OverridesDashboard` uses the hook.
 - Consolidated `GlobalVariable` type into `wxcc-api.ts`; removed duplicate declaration from `OverridesDashboard`.
 - `ADMIN_GUIDE.md` — comprehensive admin guide covering OAuth setup, flow design, Control Hub configuration (override sets, variables, audio files), and user profile permissions; includes screenshot suggestions throughout.
+- `INTEGRATOR_GUIDE.md` — step-by-step guide for connecting the app to a new tenant, from OAuth integration creation through end-to-end verification; includes troubleshooting section and sign-off checklist.
 - `USER_GUIDE.md` updated: corrected access model (any user with appropriate permissions, not admins only), added screenshot suggestions throughout, added FAQ entry about partial override visibility.
 - Login page disclaimer updated to reflect correct access requirements.
 - `README.md` updated: corrected access model, added documentation table, updated project structure.
