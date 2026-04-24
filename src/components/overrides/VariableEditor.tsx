@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Save, FileAudio, Type } from "lucide-react";
-import type { GlobalVariable } from "./OverridesDashboard";
+import type { GlobalVariable } from "@/lib/wxcc-api";
 
 interface Props {
   variable: GlobalVariable;
