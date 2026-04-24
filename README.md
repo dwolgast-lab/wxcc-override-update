@@ -2,14 +2,26 @@
 
 A web application for managing Webex Contact Center Business Hours Overrides — activate/deactivate overrides, record G.711 µ-law WAV announcements, and update TTS messages, all from a browser without needing Cisco Control Hub access.
 
+Any Webex Contact Center user whose profile grants permission to manage overrides, global variables, and/or audio files can use this app — no full administrator role required.
+
 Built by **TTEC Digital**.
 
 ---
 
 ## Recent Changes
 
-- **v1.0.1** — Fixed dialog layout overflow for WAV-type overrides with long filenames; added dual logos on login page; added version footer; added TopNav logo
+- **v1.0.1** — Fixed dialog layout overflow for WAV-type overrides; logos, version footer, refactoring; corrected access model (any user with appropriate permissions, not admins only); added Admin Guide and updated User Guide with screenshot markers
 - **v1.0.0** — Initial release: override activate/deactivate, WAV recording (browser-native G.711 µ-law), TTS editing with SSML support, automatic variable linking, Webex OAuth authentication
+
+---
+
+## Documentation
+
+| Document | Audience |
+|---|---|
+| [User Guide](USER_GUIDE.md) | End users managing overrides day-to-day |
+| [Admin Guide](ADMIN_GUIDE.md) | Administrators deploying and configuring the app |
+| [Changelog](CHANGELOG.md) | All changes by version |
 
 ---
 
@@ -65,11 +77,14 @@ src/
     audio/           — AudioRecorder (browser-native WAV encoding)
     layout/          — TopNav, FeedbackForm
     overrides/       — OverridesDashboard, OverrideEditDialog, VariableEditor
+  hooks/
+    useOverrideData.ts — Data fetching hook (overrides + variables)
   lib/
-    wxcc-api.ts      — WxCC Config API client
+    wxcc-api.ts        — WxCC Config API client
+    audio-encode.ts    — G.711 µ-law WAV encoding (browser-native)
     override-format.ts — Naming conventions, date/time formatting
-    session.ts       — iron-session helpers
-    version.ts       — App version constant
+    session.ts         — iron-session helpers
+    version.ts         — App version constant
 public/
   logos/             — Place ttec-digital.svg and webex-cc.svg here
 ```
@@ -79,8 +94,8 @@ public/
 ## Logo Setup
 
 Place your logo files in `public/logos/`:
-- `public/logos/ttec-digital.svg` — TTEC Digital logo (appears on login page)
-- `public/logos/webex-cc.svg` — Webex Contact Center logo (appears on login page and in the top navigation bar)
+- `public/logos/ttec-digital.svg` — TTEC Digital logo (appears on login page and top nav)
+- `public/logos/webex-cc.png` — Webex Contact Center logo (appears on login page and top nav)
 
 If the files are absent, the logo slots are hidden gracefully.
 

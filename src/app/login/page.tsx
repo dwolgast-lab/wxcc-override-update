@@ -56,7 +56,7 @@ function LoginCard() {
           </Button>
         </a>
         <p className="text-center text-xs text-gray-500">
-          You must have a Webex Contact Center administrator role to use this app.
+          Your Webex account must have permission to manage overrides, global variables, and audio files in your contact center.
         </p>
       </CardContent>
     </Card>

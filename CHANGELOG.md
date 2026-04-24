@@ -5,17 +5,24 @@ Versioning follows [Semantic Versioning](https://semver.org/): MAJOR.MINOR.PATCH
 
 ---
 
-## [1.0.1] — 2026-04-23
+## [1.0.1] — 2026-04-24
 
 ### Fixed
 - Dialog layout overflow for WAV-type overrides: long no-space filenames (e.g. `globalStandardWeatherClosingWAV`) were expanding past the dialog boundary due to CSS grid children having `min-width: auto`. Added `min-w-0` to step wrappers and `overflow-hidden flex-1` to card text containers.
 - Horizontal scrollbar on page body caused by dialog portal overflow; added `overflow-x: clip` to body.
 
 ### Added
-- Dual logo slots on login page (`/public/logos/ttec-digital.svg` and `/public/logos/webex-cc.svg`). Logos gracefully hidden if files are absent.
+- Dual logo slots on login page (`/public/logos/ttec-digital.svg` and `/public/logos/webex-cc.png`). Logos gracefully hidden if files are absent.
 - Webex CC logo in top navigation bar (replaces "WX" text avatar).
 - Version footer on every page (`v1.0.1 — Built by TTEC Digital`).
 - `src/lib/version.ts` as the single source of truth for the app version string.
+- Extracted G.711 µ-law encoding to `src/lib/audio-encode.ts`; `AudioRecorder` now imports from there.
+- Extracted override/variable data fetching to `src/hooks/useOverrideData.ts`; `OverridesDashboard` uses the hook.
+- Consolidated `GlobalVariable` type into `wxcc-api.ts`; removed duplicate declaration from `OverridesDashboard`.
+- `ADMIN_GUIDE.md` — comprehensive admin guide covering OAuth setup, flow design, Control Hub configuration (override sets, variables, audio files), and user profile permissions; includes screenshot suggestions throughout.
+- `USER_GUIDE.md` updated: corrected access model (any user with appropriate permissions, not admins only), added screenshot suggestions throughout, added FAQ entry about partial override visibility.
+- Login page disclaimer updated to reflect correct access requirements.
+- `README.md` updated: corrected access model, added documentation table, updated project structure.
 
 ---
 
