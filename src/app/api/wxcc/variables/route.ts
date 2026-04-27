@@ -6,7 +6,7 @@ export async function GET() {
   const session = await getSession();
   if (!session.accessToken) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const orgId = session.orgId ?? process.env.WXCC_ORG_ID ?? "";
+  const orgId = session.orgId ?? "";
   try {
     const vars = await listGlobalVariables(orgId);
     return NextResponse.json(vars);

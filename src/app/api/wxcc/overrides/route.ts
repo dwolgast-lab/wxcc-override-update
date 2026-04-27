@@ -3,7 +3,7 @@ import { getSession } from "@/lib/session";
 import { listOverrideSets } from "@/lib/wxcc-api";
 
 function getOrgId(session: Awaited<ReturnType<typeof getSession>>) {
-  return session.orgId ?? process.env.WXCC_ORG_ID ?? "";
+  return session.orgId ?? "";
 }
 
 export async function GET() {

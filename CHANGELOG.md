@@ -5,6 +5,17 @@ Versioning follows [Semantic Versioning](https://semver.org/): MAJOR.MINOR.PATCH
 
 ---
 
+## [1.0.2] — 2026-04-27
+
+### Changed
+- Organization ID is now derived automatically from the user's Webex OAuth token at login — `WXCC_ORG_ID` environment variable removed. The same deployment now works for any Webex Contact Center tenant without config changes.
+
+### Fixed
+- Documentation incorrectly listed `NEXT_PUBLIC_ORG_ID` as a required environment variable (the code used `WXCC_ORG_ID`). Both references removed.
+- OAuth consent screen (first-time login) now documented in Integrator's Guide and User Guide with screenshot placeholders.
+
+---
+
 ## [1.0.1] — 2026-04-24
 
 ### Fixed

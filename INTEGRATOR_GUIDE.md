@@ -27,22 +27,7 @@ Before starting, confirm you have:
 
 ---
 
-## Step 1: Find Your Organization ID
-
-You will need the Organization ID in several later steps.
-
-1. Sign in to [Control Hub](https://admin.webex.com) with your administrator account.
-2. Click **Account** in the left sidebar.
-3. On the Account page, find the **Organization ID** field. It is a UUID in the format `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`.
-4. Copy it — you will use it as `NEXT_PUBLIC_ORG_ID` in the app's environment variables.
-
-> 📷 **Screenshot suggestion:** Capture the Control Hub Account page with the Organization ID field highlighted. Redact or blur the actual value if this document will be shared externally.
-
-> **Tip:** The Organization ID is also visible in the URL when you are in Control Hub: `https://admin.webex.com/o/<orgId>/...`
-
----
-
-## Step 2: Create the OAuth Integration on developer.webex.com
+## Step 1: Create the OAuth Integration on developer.webex.com
 
 The app authenticates users via Webex OAuth. You must register an Integration that authorizes users from your tenant to sign in.
 
@@ -116,19 +101,20 @@ Store the generated value — you will use it as `SESSION_SECRET`.
    - **Framework Preset:** Next.js (auto-detected)
    - **Root Directory:** leave as `/`
    - **Build Command:** leave as default (`npm run build`)
-5. Before clicking Deploy, click **Environment Variables** and add all five variables:
+5. Before clicking Deploy, click **Environment Variables** and add all four variables:
 
    | Name | Value |
    |---|---|
-   | `WEBEX_CLIENT_ID` | Client ID from Step 2 |
-   | `WEBEX_CLIENT_SECRET` | Client Secret from Step 2 |
+   | `WEBEX_CLIENT_ID` | Client ID from Step 1 |
+   | `WEBEX_CLIENT_SECRET` | Client Secret from Step 1 |
    | `WEBEX_REDIRECT_URI` | Your Vercel app URL + `/api/auth/callback` |
    | `SESSION_SECRET` | Generated value from Step 3 |
-   | `NEXT_PUBLIC_ORG_ID` | Organization ID from Step 1 |
+
+   > **No Org ID variable needed.** The app reads the Organization ID from each user's Webex OAuth token at login — the same deployment works for any tenant without any environment variable changes.
 
    > ⚠️ Set each of these for the **Production** environment at minimum. Add them to Preview and Development environments as well if you plan to use those.
 
-> 📷 **Screenshot suggestion:** Capture the Vercel "Environment Variables" panel during project setup showing all five variable names (with values blurred/redacted) set for Production.
+> 📷 **Screenshot suggestion:** Capture the Vercel "Environment Variables" panel during project setup showing all four variable names (with values blurred/redacted) set for Production.
 
 6. Click **Deploy**. Wait for the build to complete (typically 1–2 minutes).
 7. Once deployed, Vercel provides a URL like `https://wxcc-override-update-xxx.vercel.app`. Note this URL.
@@ -139,7 +125,7 @@ Store the generated value — you will use it as `SESSION_SECRET`.
 ### Option B: Custom Node.js Host
 
 1. Clone the repository to your server.
-2. Copy `.env.example` to `.env.local` and fill in all five variables.
+2. Copy `.env.example` to `.env.local` and fill in all four variables.
 3. Run:
    ```bash
    npm install
@@ -369,7 +355,7 @@ The `WEBEX_REDIRECT_URI` environment variable does not exactly match a URI regis
 The OAuth Integration on developer.webex.com is missing the `cjp:config` or `cjp:config_write` scopes. Open the integration, add the missing scope, and save. Users may need to re-authorize.
 
 ### Dashboard loads but shows no overrides
-- Confirm `NEXT_PUBLIC_ORG_ID` is set to the correct Organization ID for the tenant.
+- Confirm the signed-in user belongs to the correct Webex tenant (the org ID is read from their token automatically).
 - Confirm the signed-in user's profile has permission to read Business Hours data.
 - Confirm override sets exist in Control Hub for this organization.
 
@@ -401,7 +387,8 @@ The app automatically refreshes tokens 5 minutes before expiry. If users report 
 | `WEBEX_CLIENT_SECRET` | Yes | OAuth Integration Client Secret — treat as a password |
 | `WEBEX_REDIRECT_URI` | Yes | Must exactly match a URI registered in the Integration |
 | `SESSION_SECRET` | Yes | Random ≥32-char string for encrypting session cookies |
-| `NEXT_PUBLIC_ORG_ID` | Yes | Webex Organization ID (UUID) from Control Hub → Account |
+
+The Organization ID is not an environment variable — it is read automatically from each user's Webex OAuth token at login.
 
 ---
 
@@ -411,7 +398,7 @@ Use this as a sign-off checklist before handing the deployment to end users.
 
 **Infrastructure**
 - [ ] Repository cloned / Vercel project connected to GitHub
-- [ ] All five environment variables set in production environment
+- [ ] All four environment variables set in production environment
 - [ ] App URL accessible over HTTPS
 
 **OAuth**

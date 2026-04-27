@@ -50,11 +50,12 @@ Set the following in your deployment environment (Vercel, or a `.env.local` file
 | `WEBEX_CLIENT_SECRET` | Client Secret from the OAuth integration |
 | `WEBEX_REDIRECT_URI` | The redirect URI you registered (must match exactly) |
 | `SESSION_SECRET` | A random string of at least 32 characters (used to encrypt session cookies) |
-| `NEXT_PUBLIC_ORG_ID` | Your Webex organization ID (found in Control Hub → Account) |
+
+> **No Org ID required.** The app reads each user's Organization ID automatically from their Webex OAuth token at login — no environment variable is needed. The same deployment works for any tenant without code or config changes.
 
 > ⚠️ **Security note:** Never commit `WEBEX_CLIENT_SECRET` or `SESSION_SECRET` to source control. Set them as encrypted environment variables in your hosting platform.
 
-> 📷 **Screenshot suggestion:** Capture the Vercel project's Environment Variables settings page (with secret values redacted/blurred) showing all five variables configured for the Production environment.
+> 📷 **Screenshot suggestion:** Capture the Vercel project's Environment Variables settings page (with secret values redacted/blurred) showing all four variables configured for the Production environment.
 
 ---
 

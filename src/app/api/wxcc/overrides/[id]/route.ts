@@ -8,7 +8,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
   const { id } = await params;
   const body = await req.json();
-  const orgId = session.orgId ?? process.env.WXCC_ORG_ID ?? "";
+  const orgId = session.orgId ?? "";
 
   try {
     const result = await updateOverrideSet(orgId, id, body);

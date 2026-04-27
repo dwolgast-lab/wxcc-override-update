@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
     session.userId = profile.id;
     session.displayName = profile.displayName;
     session.email = profile.emails?.[0];
-    session.orgId = process.env.WXCC_ORG_ID ?? decodeWebexOrgId(profile.orgId ?? "");
+    session.orgId = decodeWebexOrgId(profile.orgId ?? "");
     await session.save();
 
     const response = NextResponse.redirect(new URL("/dashboard", req.url));

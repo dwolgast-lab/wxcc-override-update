@@ -41,7 +41,6 @@ Set the following environment variables (see `.env.example`):
 | `WEBEX_CLIENT_SECRET` | OAuth app client secret |
 | `WEBEX_REDIRECT_URI` | Must match the URI registered in the OAuth app |
 | `SESSION_SECRET` | ≥32-char random string for iron-session encryption |
-| `NEXT_PUBLIC_ORG_ID` | Your Webex organization ID |
 
 ---
 
