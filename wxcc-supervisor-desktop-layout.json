@@ -281,7 +281,8 @@
         {
           "nav": {
             "label": "Override Manager",
-            "icon": "waveform",
+            "icon": "dashboard",
+            "iconActive": "dashboard-active",
             "iconType": "momentum",
             "navigateTo": "overrides",
             "align": "top"
@@ -291,11 +292,13 @@
             "useFlexLayout": true,
             "widgets": {
               "comp1": {
-                "comp": "agentx-wc-team-performance-widget",
+                "comp": "wxcc-override-manager",
+                "script": "https://wxcc-override-update.vercel.app/wxcc-override-widget.js",
+                "attributes": {
+                  "access-token": "$STORE.auth.accessToken"
+                },
                 "width": 12,
-                "height": 19,
-                "wrapper": { "title": "Override Manager", "id": "override-manager-1" },
-                "properties": { "tpwConfigs": "$STORE.agent.tpwConfigs" }
+                "height": 19
               }
             }
           }
@@ -513,7 +516,8 @@
         {
           "nav": {
             "label": "Override Manager",
-            "icon": "waveform",
+            "icon": "dashboard",
+            "iconActive": "dashboard-active",
             "iconType": "momentum",
             "navigateTo": "overrides",
             "align": "top"
@@ -523,11 +527,13 @@
             "useFlexLayout": true,
             "widgets": {
               "comp1": {
-                "comp": "agentx-wc-team-performance-widget",
+                "comp": "wxcc-override-manager",
+                "script": "https://wxcc-override-update.vercel.app/wxcc-override-widget.js",
+                "attributes": {
+                  "access-token": "$STORE.auth.accessToken"
+                },
                 "width": 12,
-                "height": 19,
-                "wrapper": { "title": "Override Manager", "id": "override-manager-2" },
-                "properties": { "tpwConfigs": "$STORE.agent.tpwConfigs" }
+                "height": 19
               }
             }
           }
