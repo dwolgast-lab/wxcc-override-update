@@ -281,8 +281,8 @@
         {
           "nav": {
             "label": "Override Manager",
-            "icon": "bell",
-            "iconActive": "bell-active",
+            "icon": "calendar",
+            "iconActive": "calendar-active",
             "iconType": "momentum",
             "navigateTo": "override-manager",
             "align": "top"
@@ -292,13 +292,12 @@
             "useFlexLayout": true,
             "widgets": {
               "comp1": {
-                "comp": "wxcc-override-manager",
-                "script": "https://wxcc-override-update.vercel.app/wxcc-override-widget.js",
+                "comp": "agentx-wc-iframe-widget",
                 "width": 12,
                 "height": 20,
                 "wrapper": { "title": "Override Manager", "id": "override-manager-1" },
-                "attributes": {
-                  "access-token": "$STORE.auth.accessToken"
+                "properties": {
+                  "src": "https://wxcc-override-update.vercel.app/embed"
                 }
               }
             }
@@ -517,8 +516,8 @@
         {
           "nav": {
             "label": "Override Manager",
-            "icon": "bell",
-            "iconActive": "bell-active",
+            "icon": "calendar",
+            "iconActive": "calendar-active",
             "iconType": "momentum",
             "navigateTo": "override-manager",
             "align": "top"
@@ -528,13 +527,12 @@
             "useFlexLayout": true,
             "widgets": {
               "comp1": {
-                "comp": "wxcc-override-manager",
-                "script": "https://wxcc-override-update.vercel.app/wxcc-override-widget.js",
+                "comp": "agentx-wc-iframe-widget",
                 "width": 12,
                 "height": 20,
                 "wrapper": { "title": "Override Manager", "id": "override-manager-2" },
-                "attributes": {
-                  "access-token": "$STORE.auth.accessToken"
+                "properties": {
+                  "src": "https://wxcc-override-update.vercel.app/embed"
                 }
               }
             }

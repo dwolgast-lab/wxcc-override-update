@@ -3,13 +3,44 @@
 import { useEffect, useRef, useState } from "react";
 import { OverridesDashboard } from "@/components/overrides/OverridesDashboard";
 
-type Status = "waiting" | "authenticating" | "ready" | "error";
+type Status = "checking" | "waiting" | "authenticating" | "ready" | "needs-signin" | "error";
+
+const APP_URL = typeof window !== "undefined" ? window.location.origin : "";
 
 export default function EmbedPage() {
-  const [status, setStatus] = useState<Status>("waiting");
+  const [status, setStatus] = useState<Status>("checking");
   const [errorMsg, setErrorMsg] = useState("");
   const authInFlight = useRef(false);
 
+  // On mount: check for an existing session first (e.g. from a recent standalone login).
+  // If none, wait up to 4s for a postMessage token from the desktop web component.
+  // If neither arrives, show the sign-in prompt.
+  useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout>;
+
+    fetch("/api/auth/me")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((user) => {
+        if (user?.authenticated) {
+          setStatus("ready");
+        } else {
+          setStatus("waiting");
+          timeoutId = setTimeout(() => {
+            setStatus((s) => (s === "waiting" ? "needs-signin" : s));
+          }, 4000);
+        }
+      })
+      .catch(() => {
+        setStatus("waiting");
+        timeoutId = setTimeout(() => {
+          setStatus((s) => (s === "waiting" ? "needs-signin" : s));
+        }, 4000);
+      });
+
+    return () => clearTimeout(timeoutId);
+  }, []);
+
+  // Also listen for a token from the wxcc-override-manager web component.
   useEffect(() => {
     const handler = async (event: MessageEvent) => {
       if (event.origin !== window.location.origin) return;
@@ -19,7 +50,6 @@ export default function EmbedPage() {
 
       authInFlight.current = true;
       setStatus("authenticating");
-
       try {
         const res = await fetch("/api/auth/widget", {
           method: "POST",
@@ -41,6 +71,15 @@ export default function EmbedPage() {
     return () => window.removeEventListener("message", handler);
   }, []);
 
+  if (status === "checking" || status === "authenticating") {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen text-sm text-gray-400 gap-2">
+        <div className="w-6 h-6 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+        {status === "checking" ? "Loading…" : "Authenticating…"}
+      </div>
+    );
+  }
+
   if (status === "waiting") {
     return (
       <div className="flex flex-col items-center justify-center h-screen text-sm text-gray-400 gap-2">
@@ -50,11 +89,21 @@ export default function EmbedPage() {
     );
   }
 
-  if (status === "authenticating") {
+  if (status === "needs-signin") {
     return (
-      <div className="flex flex-col items-center justify-center h-screen text-sm text-gray-400 gap-2">
-        <div className="w-6 h-6 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
-        Authenticating…
+      <div className="flex flex-col items-center justify-center h-screen gap-4 px-6 text-center">
+        <p className="text-sm text-gray-600 font-medium">Sign in to use Override Manager</p>
+        <p className="text-xs text-gray-400">
+          Open the app in a new tab to sign in. Once signed in, return here and refresh.
+        </p>
+        <a
+          href={APP_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+        >
+          Open Override Manager ↗
+        </a>
       </div>
     );
   }
