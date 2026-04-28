@@ -34,7 +34,12 @@ export async function POST(req: NextRequest) {
   // The session expiry is set conservatively; the web component will re-post an updated
   // token when the desktop refreshes, which will call this endpoint again.
   session.expiresAt = Date.now() + 60 * 60 * 1000;
-  await session.save();
+  try {
+    await session.save();
+  } catch (saveErr: any) {
+    console.error("[widget] session.save() failed:", saveErr?.message ?? saveErr);
+    return NextResponse.json({ error: "Session save failed: " + (saveErr?.message ?? "unknown") }, { status: 500 });
+  }
 
   return NextResponse.json({ ok: true });
 }
