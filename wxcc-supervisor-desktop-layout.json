@@ -281,8 +281,8 @@
         {
           "nav": {
             "label": "Override Manager",
-            "icon": "settings",
-            "iconActive": "settings-active",
+            "icon": "dashboard",
+            "iconActive": "dashboard-active",
             "iconType": "momentum",
             "navigateTo": "override-manager",
             "align": "top"
@@ -514,8 +514,8 @@
         {
           "nav": {
             "label": "Override Manager",
-            "icon": "settings",
-            "iconActive": "settings-active",
+            "icon": "dashboard",
+            "iconActive": "dashboard-active",
             "iconType": "momentum",
             "navigateTo": "override-manager",
             "align": "top"
