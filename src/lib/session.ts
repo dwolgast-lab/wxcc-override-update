@@ -17,7 +17,11 @@ const sessionOptions: SessionOptions = {
   cookieOptions: {
     secure: process.env.NODE_ENV === "production",
     httpOnly: true,
-    sameSite: "lax",
+    // SameSite=None required for the /embed route when loaded inside the WxCC
+    // Supervisor Desktop (a cross-site iframe). SameSite=None is safe here
+    // because the cookie is encrypted by iron-session. In local dev we stay on
+    // "lax" because SameSite=None requires Secure (HTTPS).
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 60 * 60 * 8, // 8 hours
   },
 };

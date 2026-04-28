@@ -5,6 +5,23 @@ Versioning follows [Semantic Versioning](https://semver.org/): MAJOR.MINOR.PATCH
 
 ---
 
+## [1.0.3] — 2026-04-28
+
+### Added
+- **Supervisor Desktop widget** — the app can now be embedded directly in the WxCC Extensible Supervisor Desktop as a custom widget, with no separate login required.
+  - `public/wxcc-override-widget.js`: custom element `<wxcc-override-manager>` that receives `$STORE.auth.accessToken` from the desktop layout, creates an iframe pointing to `/embed`, and posts the token in via `postMessage`.
+  - `src/app/embed/page.tsx`: stripped embed page (no TopNav/footer) that receives the desktop token, exchanges it for an iron-session, and renders the override dashboard.
+  - `src/app/api/auth/widget/route.ts`: POST endpoint that validates a desktop bearer token against `/v1/people/me`, decodes the org ID, and creates a session — the same path as the OAuth callback.
+  - `wxcc-supervisor-desktop-layout.json`: ready-to-upload desktop layout with the Override Manager widget added to both `supervisor` and `supervisorAgent` navigation. Replace `REPLACE_WITH_YOUR_APP_URL` before uploading to Control Hub.
+- **`SameSite=None` session cookie in production** — required for the session cookie to be sent in cross-site iframe requests (WxCC desktop → app embed route). Local dev continues to use `SameSite=Lax`.
+
+### Notes
+- The desktop OAuth app must have `cjp:config` and `cjp:config_write` scopes for all widget operations to succeed. If only `cjp:config` is present, read operations work but TTS/WAV saves will fail with a 403.
+- WAV recording inside the widget requires the browser to grant microphone access to the iframe. This works unless the WxCC desktop page applies a restrictive Permissions Policy for embedded iframes.
+- Token refresh is handled automatically: when the desktop refreshes its token, `$STORE.auth.accessToken` updates, the web component re-posts the new token, and the embed page silently re-authenticates.
+
+---
+
 ## [1.0.2] — 2026-04-27
 
 ### Changed
