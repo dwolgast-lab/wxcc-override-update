@@ -11,9 +11,14 @@ Versioning follows [Semantic Versioning](https://semver.org/): MAJOR.MINOR.PATCH
 - **Supervisor Desktop widget** — the app can now be embedded directly in the WxCC Extensible Supervisor Desktop as a custom widget, with no separate login required.
   - `public/wxcc-override-widget.js`: custom element `<wxcc-override-manager>` that receives `$STORE.auth.accessToken` from the desktop layout, creates an iframe pointing to `/embed`, and posts the token in via `postMessage`.
   - `src/app/embed/page.tsx`: stripped embed page (no TopNav/footer) that receives the desktop token, exchanges it for an iron-session, and renders the override dashboard.
-  - `src/app/api/auth/widget/route.ts`: POST endpoint that validates a desktop bearer token against `/v1/people/me`, decodes the org ID, and creates a session — the same path as the OAuth callback.
-  - `wxcc-supervisor-desktop-layout.json`: ready-to-upload desktop layout with the Override Manager widget added to both `supervisor` and `supervisorAgent` navigation. Replace `REPLACE_WITH_YOUR_APP_URL` before uploading to Control Hub.
+  - `src/app/api/auth/widget/route.ts`: POST endpoint that validates a desktop bearer token against `/v1/people/me`, decodes the org ID, and creates a session.
+  - `wxcc-supervisor-desktop-layout.json`: ready-to-upload desktop layout with the Override Manager widget added to both `supervisor` and `supervisorAgent` navigation.
 - **`SameSite=None` session cookie in production** — required for the session cookie to be sent in cross-site iframe requests (WxCC desktop → app embed route). Local dev continues to use `SameSite=Lax`.
+
+### Fixed
+- **Desktop layout `navigateTo` with hyphens** — WxCC silently drops any navigation entry whose `navigateTo` value contains a hyphen. Renamed from `override-manager` to `overrides`.
+- **postMessage origin check** — the embed page was rejecting the desktop token because `event.origin` (WxCC desktop domain) didn't match `window.location.origin` (our app domain). The check is removed; the token is validated server-side against the Webex API instead.
+- **Iron-session cookie overflow** — the WxCC desktop access token is a large JWT that exceeds the 4096-byte browser cookie limit when sealed by iron-session. The widget auth route now stores only user metadata (userId, orgId, etc.) in the iron-session and writes the raw token to a separate `wxcc_token` httpOnly/Secure/SameSite=None cookie. All WxCC API routes and `/api/auth/me` fall back to this cookie when the session carries no access token.
 
 ### Notes
 - The desktop OAuth app must have `cjp:config` and `cjp:config_write` scopes for all widget operations to succeed. If only `cjp:config` is present, read operations work but TTS/WAV saves will fail with a 403.
