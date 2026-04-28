@@ -281,10 +281,9 @@
         {
           "nav": {
             "label": "Override Manager",
-            "icon": "dashboard",
-            "iconActive": "dashboard-active",
+            "icon": "waveform",
             "iconType": "momentum",
-            "navigateTo": "override-manager",
+            "navigateTo": "overrides",
             "align": "top"
           },
           "page": {
@@ -514,10 +513,9 @@
         {
           "nav": {
             "label": "Override Manager",
-            "icon": "dashboard",
-            "iconActive": "dashboard-active",
+            "icon": "waveform",
             "iconType": "momentum",
-            "navigateTo": "override-manager",
+            "navigateTo": "overrides",
             "align": "top"
           },
           "page": {
