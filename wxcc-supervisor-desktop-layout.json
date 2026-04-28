@@ -282,7 +282,6 @@
           "nav": {
             "label": "Override Manager",
             "icon": "calendar",
-            "iconActive": "calendar-active",
             "iconType": "momentum",
             "navigateTo": "override-manager",
             "align": "top"
@@ -295,7 +294,6 @@
                 "comp": "agentx-wc-iframe-widget",
                 "width": 12,
                 "height": 20,
-                "wrapper": { "title": "Override Manager", "id": "override-manager-1" },
                 "properties": {
                   "src": "https://wxcc-override-update.vercel.app/embed"
                 }
@@ -517,7 +515,6 @@
           "nav": {
             "label": "Override Manager",
             "icon": "calendar",
-            "iconActive": "calendar-active",
             "iconType": "momentum",
             "navigateTo": "override-manager",
             "align": "top"
@@ -530,7 +527,6 @@
                 "comp": "agentx-wc-iframe-widget",
                 "width": 12,
                 "height": 20,
-                "wrapper": { "title": "Override Manager", "id": "override-manager-2" },
                 "properties": {
                   "src": "https://wxcc-override-update.vercel.app/embed"
                 }
