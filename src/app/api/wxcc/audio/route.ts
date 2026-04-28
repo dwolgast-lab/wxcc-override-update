@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSession } from "@/lib/session";
+import { getSession, getEffectiveAccessToken } from "@/lib/session";
 import { listAudioFiles, uploadAudioFile } from "@/lib/wxcc-api";
 
 export async function GET() {
   const session = await getSession();
-  if (!session.accessToken) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!(await getEffectiveAccessToken())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const orgId = session.orgId ?? "";
   try {
@@ -17,7 +17,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const session = await getSession();
-  if (!session.accessToken) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!(await getEffectiveAccessToken())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const form = await req.formData();
   const file = form.get("file") as File | null;

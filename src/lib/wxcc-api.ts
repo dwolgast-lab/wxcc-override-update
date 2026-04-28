@@ -1,4 +1,4 @@
-import { getSession } from "./session";
+import { getSession, getEffectiveAccessToken } from "./session";
 import { refreshAccessToken } from "./webex-auth";
 
 const WXCC_BASE = "https://api.wxcc-us1.cisco.com"; // US datacenter; override via env if needed
@@ -6,19 +6,25 @@ const WEBEX_BASE = "https://webexapis.com/v1";
 
 async function getValidToken(): Promise<string> {
   const session = await getSession();
-  if (!session.accessToken) throw new Error("Not authenticated");
 
-  // Refresh if expiring within 5 minutes
-  if (session.expiresAt && Date.now() > session.expiresAt - 5 * 60 * 1000) {
-    if (!session.refreshToken) throw new Error("Session expired");
-    const tokens = await refreshAccessToken(session.refreshToken);
-    session.accessToken = tokens.access_token;
-    session.refreshToken = tokens.refresh_token;
-    session.expiresAt = Date.now() + tokens.expires_in * 1000;
-    await session.save();
+  // OAuth flow: token is in the session and may need refreshing.
+  if (session.accessToken) {
+    if (session.expiresAt && Date.now() > session.expiresAt - 5 * 60 * 1000) {
+      if (!session.refreshToken) throw new Error("Session expired");
+      const tokens = await refreshAccessToken(session.refreshToken);
+      session.accessToken = tokens.access_token;
+      session.refreshToken = tokens.refresh_token;
+      session.expiresAt = Date.now() + tokens.expires_in * 1000;
+      await session.save();
+    }
+    return session.accessToken;
   }
 
-  return session.accessToken;
+  // Widget embed flow: token is in a separate cookie (too large for iron-session).
+  const widgetToken = await getEffectiveAccessToken();
+  if (widgetToken) return widgetToken;
+
+  throw new Error("Not authenticated");
 }
 
 async function wxccFetch(path: string, init?: RequestInit) {

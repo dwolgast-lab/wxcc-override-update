@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSession } from "@/lib/session";
+import { getSession, getEffectiveAccessToken } from "@/lib/session";
 import { listOverrideSets } from "@/lib/wxcc-api";
 
 function getOrgId(session: Awaited<ReturnType<typeof getSession>>) {
@@ -8,7 +8,7 @@ function getOrgId(session: Awaited<ReturnType<typeof getSession>>) {
 
 export async function GET() {
   const session = await getSession();
-  if (!session.accessToken) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!(await getEffectiveAccessToken())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
     const overrides = await listOverrideSets(getOrgId(session));

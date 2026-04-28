@@ -1,6 +1,8 @@
 import { getIronSession, SessionOptions } from "iron-session";
 import { cookies } from "next/headers";
 
+export const WIDGET_TOKEN_COOKIE = "wxcc_token";
+
 export interface SessionData {
   accessToken?: string;
   refreshToken?: string;
@@ -29,4 +31,14 @@ const sessionOptions: SessionOptions = {
 export async function getSession() {
   const cookieStore = await cookies();
   return getIronSession<SessionData>(cookieStore, sessionOptions);
+}
+
+// Returns the access token from the iron-session if present, otherwise falls
+// back to the raw wxcc_token cookie set by the widget auth flow (the WxCC
+// desktop token can be too large to fit inside an iron-session seal).
+export async function getEffectiveAccessToken(): Promise<string | undefined> {
+  const session = await getSession();
+  if (session.accessToken) return session.accessToken;
+  const cookieStore = await cookies();
+  return cookieStore.get(WIDGET_TOKEN_COOKIE)?.value;
 }

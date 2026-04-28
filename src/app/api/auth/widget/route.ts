@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSession } from "@/lib/session";
+import { cookies } from "next/headers";
+import { getSession, WIDGET_TOKEN_COOKIE } from "@/lib/session";
 
 function decodeWebexOrgId(hydraId: string): string | undefined {
   try {
@@ -9,6 +10,8 @@ function decodeWebexOrgId(hydraId: string): string | undefined {
     return undefined;
   }
 }
+
+const isProduction = process.env.NODE_ENV === "production";
 
 export async function POST(req: NextRequest) {
   const { accessToken } = await req.json().catch(() => ({}));
@@ -24,22 +27,27 @@ export async function POST(req: NextRequest) {
   }
   const profile = await profileRes.json();
 
+  // Store user metadata in the iron-session (deliberately excludes the access
+  // token — the WxCC desktop JWT can exceed the 4096-byte cookie size limit
+  // when sealed by iron-session). The raw token goes into its own httpOnly
+  // cookie instead.
   const session = await getSession();
-  session.accessToken = accessToken;
   session.userId = profile.id;
   session.displayName = profile.displayName;
   session.email = profile.emails?.[0];
   session.orgId = decodeWebexOrgId(profile.orgId ?? "");
-  // No refresh token when using the desktop token — the desktop manages its own refresh.
-  // The session expiry is set conservatively; the web component will re-post an updated
-  // token when the desktop refreshes, which will call this endpoint again.
   session.expiresAt = Date.now() + 60 * 60 * 1000;
-  try {
-    await session.save();
-  } catch (saveErr: any) {
-    console.error("[widget] session.save() failed:", saveErr?.message ?? saveErr);
-    return NextResponse.json({ error: "Session save failed: " + (saveErr?.message ?? "unknown") }, { status: 500 });
-  }
+  await session.save();
+
+  // Store the raw token in a separate httpOnly cookie so API routes can use it.
+  const cookieStore = await cookies();
+  cookieStore.set(WIDGET_TOKEN_COOKIE, accessToken, {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
+    maxAge: 60 * 60,
+    path: "/",
+  });
 
   return NextResponse.json({ ok: true });
 }
