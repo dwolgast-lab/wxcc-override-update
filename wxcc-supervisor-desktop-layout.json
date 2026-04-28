@@ -281,7 +281,8 @@
         {
           "nav": {
             "label": "Override Manager",
-            "icon": "calendar",
+            "icon": "settings",
+            "iconActive": "settings-active",
             "iconType": "momentum",
             "navigateTo": "override-manager",
             "align": "top"
@@ -291,12 +292,11 @@
             "useFlexLayout": true,
             "widgets": {
               "comp1": {
-                "comp": "agentx-wc-iframe-widget",
+                "comp": "agentx-wc-team-performance-widget",
                 "width": 12,
-                "height": 20,
-                "properties": {
-                  "src": "https://wxcc-override-update.vercel.app/embed"
-                }
+                "height": 19,
+                "wrapper": { "title": "Override Manager", "id": "override-manager-1" },
+                "properties": { "tpwConfigs": "$STORE.agent.tpwConfigs" }
               }
             }
           }
@@ -514,7 +514,8 @@
         {
           "nav": {
             "label": "Override Manager",
-            "icon": "calendar",
+            "icon": "settings",
+            "iconActive": "settings-active",
             "iconType": "momentum",
             "navigateTo": "override-manager",
             "align": "top"
@@ -524,12 +525,11 @@
             "useFlexLayout": true,
             "widgets": {
               "comp1": {
-                "comp": "agentx-wc-iframe-widget",
+                "comp": "agentx-wc-team-performance-widget",
                 "width": 12,
-                "height": 20,
-                "properties": {
-                  "src": "https://wxcc-override-update.vercel.app/embed"
-                }
+                "height": 19,
+                "wrapper": { "title": "Override Manager", "id": "override-manager-2" },
+                "properties": { "tpwConfigs": "$STORE.agent.tpwConfigs" }
               }
             }
           }
