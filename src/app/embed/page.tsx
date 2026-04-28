@@ -43,7 +43,6 @@ export default function EmbedPage() {
   // Also listen for a token from the wxcc-override-manager web component.
   useEffect(() => {
     const handler = async (event: MessageEvent) => {
-      if (event.origin !== window.location.origin) return;
       if (event.data?.type !== "wxcc-override-token") return;
       const { accessToken } = event.data as { accessToken?: string };
       if (!accessToken || authInFlight.current) return;
