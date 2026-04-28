@@ -281,8 +281,8 @@
         {
           "nav": {
             "label": "Override Manager",
-            "icon": "alarm",
-            "iconActive": "alarm-active",
+            "icon": "bell",
+            "iconActive": "bell-active",
             "iconType": "momentum",
             "navigateTo": "override-manager",
             "align": "top"
@@ -293,7 +293,7 @@
             "widgets": {
               "comp1": {
                 "comp": "wxcc-override-manager",
-                "script": "https://REPLACE_WITH_YOUR_APP_URL/wxcc-override-widget.js",
+                "script": "https://wxcc-override-update.vercel.app/wxcc-override-widget.js",
                 "width": 12,
                 "height": 20,
                 "wrapper": { "title": "Override Manager", "id": "override-manager-1" },
@@ -517,8 +517,8 @@
         {
           "nav": {
             "label": "Override Manager",
-            "icon": "alarm",
-            "iconActive": "alarm-active",
+            "icon": "bell",
+            "iconActive": "bell-active",
             "iconType": "momentum",
             "navigateTo": "override-manager",
             "align": "top"
@@ -529,7 +529,7 @@
             "widgets": {
               "comp1": {
                 "comp": "wxcc-override-manager",
-                "script": "https://REPLACE_WITH_YOUR_APP_URL/wxcc-override-widget.js",
+                "script": "https://wxcc-override-update.vercel.app/wxcc-override-widget.js",
                 "width": 12,
                 "height": 20,
                 "wrapper": { "title": "Override Manager", "id": "override-manager-2" },
