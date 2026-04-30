@@ -3,6 +3,8 @@
 All notable changes to WxCC Override Manager are documented here.
 Versioning follows [Semantic Versioning](https://semver.org/): MAJOR.MINOR.PATCH.
 
+Conceived and developed by **Dave Wolgast**, Senior Principal Architect, Technology Consulting, TTEC Digital.
+
 ---
 
 ## [1.0.3] — 2026-04-28

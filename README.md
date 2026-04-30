@@ -6,6 +6,8 @@ Any Webex Contact Center user whose profile grants permission to manage override
 
 Built by **TTEC Digital**.
 
+Conceived and developed by **Dave Wolgast**, Senior Principal Architect, Technology Consulting, TTEC Digital, in collaboration with Claude Code (Anthropic).
+
 ---
 
 ## Recent Changes

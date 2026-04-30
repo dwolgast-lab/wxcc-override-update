@@ -1,6 +1,7 @@
 {
   "name": "wxcc-override-update",
   "version": "1.0.3",
+  "author": "Dave Wolgast, Senior Principal Architect, Technology Consulting, TTEC Digital",
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
