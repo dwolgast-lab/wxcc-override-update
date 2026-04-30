@@ -10,6 +10,8 @@ Built by **TTEC Digital**.
 
 ## Recent Changes
 
+- **v1.0.3** — Supervisor Desktop widget: Override Manager embedded directly in the WxCC Extensible Supervisor Desktop with automatic token passthrough — no separate login required. Includes `wxcc-supervisor-desktop-layout.json` ready to upload to Control Hub.
+- **v1.0.2** — Organization ID now derived automatically from the user's OAuth token at login; `WXCC_ORG_ID` environment variable removed. The same deployment works for any Webex Contact Center tenant without code changes.
 - **v1.0.1** — Fixed dialog layout overflow for WAV-type overrides; logos, version footer, refactoring; corrected access model (any user with appropriate permissions, not admins only); added Admin Guide and updated User Guide with screenshot markers
 - **v1.0.0** — Initial release: override activate/deactivate, WAV recording (browser-native G.711 µ-law), TTS editing with SSML support, automatic variable linking, Webex OAuth authentication
 
@@ -71,7 +73,9 @@ WAV recordings are encoded client-side to **G.711 µ-law, 8 kHz, mono** using th
 src/
   app/
     api/wxcc/        — Proxy routes: overrides, variables, audio upload
+    api/auth/widget/ — Widget token exchange endpoint
     dashboard/       — Main authenticated page
+    embed/           — Stripped page for Supervisor Desktop iframe
     login/           — OAuth login page
   components/
     audio/           — AudioRecorder (browser-native WAV encoding)
@@ -86,7 +90,9 @@ src/
     session.ts         — iron-session helpers
     version.ts         — App version constant
 public/
-  logos/             — Place ttec-digital.svg and webex-cc.svg here
+  logos/               — Place ttec-digital.svg and webex-cc.png here
+  wxcc-override-widget.js — Custom element for Supervisor Desktop embedding
+wxcc-supervisor-desktop-layout.json — Ready-to-upload desktop layout
 ```
 
 ---
