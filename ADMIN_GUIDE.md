@@ -188,6 +188,36 @@ If you are pre-loading audio files created outside the app, ensure they meet the
 
 ---
 
+### 3.4 Supervisor Desktop Widget (Optional)
+
+The Override Manager can be embedded directly in the **WxCC Extensible Supervisor Desktop** as a custom widget, so supervisors can activate overrides and update announcements without leaving the desktop interface. Authentication is passed automatically from the desktop — no separate sign-in required.
+
+#### Option A: Use the Provided Layout File (Recommended for Default Layouts)
+
+If the supervisor team is currently using the **Global Desktop Layout** (the WxCC default), or if you are willing to replace an existing custom layout with the one provided:
+
+1. Download **`wxcc-supervisor-desktop-layout.json`** from the root of the [GitHub repository](https://github.com/dwolgast-lab/wxcc-override-update).
+2. Open the file in a text editor and verify the app URL is correct in both widget entries:
+   ```
+   "script": "https://YOUR_APP_URL/wxcc-override-widget.js"
+   ```
+   If you are using the standard TTEC Digital deployment, the URL is already set correctly. If you have deployed the app yourself, replace the URL with your own.
+3. In Control Hub, go to **Contact Center → Desktop → Desktop Layouts**.
+4. Click **New Layout**, give it a name (e.g., "Supervisor Override Manager"), and upload the JSON file.
+5. Go to **Contact Center → Teams** and open the team your supervisors belong to.
+6. Set the **Desktop Layout** field to the newly uploaded layout.
+7. Supervisors on that team will see the **Override Manager** entry in their left navigation bar on next login or after refreshing the Supervisor Desktop.
+
+> 📷 **Screenshot suggestion:** Capture Control Hub Desktop Layouts with the uploaded layout visible, and the Teams page showing the layout assignment.
+
+> **Note:** The provided layout already contains the standard TPW (Team Performance Widget) and call recordings navigation entries. If the team currently uses a custom layout that has other widgets, use Option B instead to preserve those customizations.
+
+#### Option B: Add the Widget to an Existing Custom Layout
+
+If the supervisor team uses a custom desktop layout that you need to preserve, see the **Integrator's Guide → Step 11** for step-by-step instructions on adding the Override Manager widget entry to your existing layout JSON.
+
+---
+
 ## Part 4: User Profiles and Permissions
 
 One of the key benefits of this app is that you can give non-administrator users access to manage specific overrides without granting full Control Hub access. This is done through WxCC User Profiles.

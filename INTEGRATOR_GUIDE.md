@@ -301,11 +301,95 @@ Configure which users can access the app and what they can do.
 
 ---
 
-## Step 11: End-to-End Test
+## Step 11: Supervisor Desktop Widget (Optional)
+
+This step embeds the Override Manager directly in the WxCC Extensible Supervisor Desktop so supervisors can use it without leaving the desktop interface. Authentication is passed automatically from the desktop session — no separate sign-in.
+
+If the supervisor team uses the **default Global Desktop Layout** and you are comfortable replacing it, use the provided layout file (Option A). If they have an existing custom layout, add the widget manually (Option B).
+
+### Option A: Upload the Provided Layout
+
+1. Download **`wxcc-supervisor-desktop-layout.json`** from the root of the GitHub repository.
+2. Open the file in a text editor. Locate the two `script` fields (one in the `supervisor` section, one in the `supervisorAgent` section) and confirm or update the app URL:
+   ```
+   "script": "https://YOUR_APP_URL/wxcc-override-widget.js"
+   ```
+3. In Control Hub, go to **Contact Center → Desktop → Desktop Layouts**, click **New Layout**, upload the file, and save.
+4. Go to **Contact Center → Teams**, open the supervisor team, and assign the new layout.
+
+The provided layout already includes the standard Team Performance Widget and call recordings navigation entries.
+
+### Option B: Add the Widget to an Existing Custom Layout
+
+Download your current custom layout JSON from Control Hub, then add the following entries.
+
+#### In the `supervisor` section — add to `area.navigation`
+
+```json
+{
+  "nav": {
+    "label": "Override Manager",
+    "icon": "dashboard",
+    "iconActive": "dashboard-active",
+    "iconType": "momentum",
+    "navigateTo": "overrides",
+    "align": "top"
+  },
+  "page": {
+    "id": "override-manager-sup",
+    "useFlexLayout": true,
+    "widgets": {
+      "comp1": {
+        "comp": "wxcc-override-manager",
+        "script": "https://YOUR_APP_URL/wxcc-override-widget.js",
+        "attributes": {
+          "access-token": "$STORE.auth.accessToken"
+        },
+        "width": 12,
+        "height": 19
+      }
+    }
+  }
+}
+```
+
+#### In the `supervisorAgent` section — add to `area.navigation`
+
+Same entry as above, but change the page `id` to avoid conflicts:
+
+```json
+"id": "override-manager-sup-agent"
+```
+
+Replace `YOUR_APP_URL` with your actual deployment URL in both entries.
+
+Upload the modified layout to Control Hub and assign it to the supervisor team.
+
+#### Critical rules — read before editing
+
+| Rule | Detail |
+|------|--------|
+| **`navigateTo` must not contain hyphens** | WxCC silently drops any nav entry whose `navigateTo` value contains a `-`. Use a single word: `overrides`, not `override-manager`. |
+| **`id` must be unique** | Each page `id` in the layout must be unique. If `override-manager-sup` is already used, choose a different name. |
+| **Valid Momentum icon names** | Confirmed working: `home`, `team`, `waveform`, `dashboard`. Other names may be silently rejected with no error. |
+| **App URL in `script` field** | Must point to your deployment. The widget JS is served from your app's `/wxcc-override-widget.js` path. |
+
+### Verify the Widget
+
+1. Log in to the Supervisor Desktop as a user assigned to the updated team.
+2. The **Override Manager** icon should appear in the left navigation bar.
+3. Click it — the Override Manager dashboard should load inside the desktop frame with no sign-in prompt.
+4. Test activating an override to confirm the token passthrough is working correctly.
+
+> 📷 **Screenshot suggestion:** Capture the Supervisor Desktop showing the Override Manager nav icon and the embedded dashboard.
+
+---
+
+## Step 12: End-to-End Test
 
 With everything configured, perform a full end-to-end test before handing off to end users.
 
-### 11.1 Test Authentication with a Non-Admin User
+### 12.1 Test Authentication with a Non-Admin User
 
 1. Open the app in a private/incognito browser window.
 2. Sign in with a **non-administrator** user account that has the Override Operator profile.
@@ -316,7 +400,7 @@ With everything configured, perform a full end-to-end test before handing off to
 > ❌ If "invalid scope" error: Confirm the user's Webex role includes Contact Center access.  
 > ❌ If dashboard is empty unexpectedly: Check the user's profile has Business Hours read permission.
 
-### 11.2 Test Override Activation
+### 12.2 Test Override Activation
 
 1. Click an override card.
 2. Toggle **Override Active** on and click **Save**.
@@ -325,7 +409,7 @@ With everything configured, perform a full end-to-end test before handing off to
 
 > ✅ Expected: Toast notification "Override activated" / "Override deactivated", change visible in Control Hub.
 
-### 11.3 Test TTS Update (TTS-type overrides)
+### 12.3 Test TTS Update (TTS-type overrides)
 
 1. Click a TTS-type override card and click **Update text**.
 2. Change the text and click **Save**.
@@ -334,7 +418,7 @@ With everything configured, perform a full end-to-end test before handing off to
 
 > ✅ Expected: Variable value updated immediately; test call plays new TTS text.
 
-### 11.4 Test WAV Recording (WAV-type overrides)
+### 12.4 Test WAV Recording (WAV-type overrides)
 
 1. Click a WAV-type override card and click **Record new**.
 2. Record a short test message and click **Accept**.
@@ -422,6 +506,12 @@ Use this as a sign-off checklist before handing the deployment to end users.
 - [ ] Override Operator profile created with correct permissions
 - [ ] Relevant staff assigned to the profile
 - [ ] Non-admin user test: can sign in, sees correct overrides, can activate/deactivate
+
+**Supervisor Desktop Widget (if applicable)**
+- [ ] Desktop layout uploaded to Control Hub with correct app URL
+- [ ] Layout assigned to supervisor team(s)
+- [ ] Override Manager nav icon visible in Supervisor Desktop
+- [ ] Widget loads without sign-in prompt
 
 **Functional Tests**
 - [ ] Override activation → visible in Control Hub within 60 seconds
